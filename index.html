@@ -266,73 +266,71 @@
 <script>
 /* ============ MENU OFFICIEL BURGER ADDICT — Pierrelaye (Uber Eats) ============ */
 const ITEMS = [
-  // SMASH ADDICTS (signature)
-  { id:'original', name:'Original Burger', price:10.00, desc:"Smash beef, fromage, ketchup, moutarde, oignons et cornichons. Version Veggie avec steak végétal", cat:'signature', kw:['original'] },
-  { id:'addict', name:'Addict Burger', price:11.90, desc:"Smash beef, fromage, sauce Addict, salade, tomate, oignons et cornichons. Version veggie avec steak végétal", cat:'signature', kw:['addict','signature'] },
-  { id:'smoked', name:'Smoked Burger', price:10.90, desc:"Smash beef, bacon de bœuf, fromage, sauce smoked, salade, tomates et crispy onions", cat:'signature', kw:['smoked burger','smoked '] },
-  { id:'chicky', name:'Chicky Burger', price:9.90, desc:"Filet de poulet pané, fromage, sauce chicken burger, salade et cornichons", cat:'signature', kw:['chicky','chicky burger'] },
-  { id:'chicken-purple', name:'Chicken Purple', price:10.90, desc:"Filet de poulet pané, red onion pickles, coleslaw purple sweet, aloco", cat:'signature', kw:['chicken purple','purple'] },
-  { id:'chicken-gold', name:'Chicken Gold', price:10.90, desc:"Filet de poulet pané, coleslaw spicy, confit d'oignon, aloco", cat:'signature', kw:['chicken gold','gold'] },
-  { id:'snow', name:'Snow Burger', price:10.90, desc:"Smash beef, fromage à raclette, red onion, bacon de bœuf, pomme paille", cat:'signature', kw:['snow','snowburger'] },
-  { id:'goat', name:'Goat Burger', price:10.90, desc:"Smash beef, fromage de chèvre, éclat de noix, miel, confit d'oignon, salade, tomate, mayo", cat:'signature', kw:['goat','chevre'] },
-  { id:'chicken-smoked', name:'Chicken Smoked Burger', price:10.90, desc:"Filet de poulet pané, salade, crispy oignons, cheddar & bacon de bœuf, sauce smoked", cat:'signature', kw:['chicken smoked','smoked chicken'] },
-  { id:'cheesmash', name:'Cheesmash Burger', price:10.90, desc:"Smash beef, poivron et oignons grillés, provolone, cheddar et sauce burger", cat:'signature', kw:['cheesmash','provolone','poivron'] },
-  { id:'bigsmash', name:'Bigsmash Burger', price:11.40, desc:"Smash beef, fromage, sauce big, salade, oignons et cornichons", cat:'signature', kw:['bigsmash','big smash','big '] },
-  { id:'geesmash', name:'Geesmash', price:11.40, desc:"Smash signature Geesmash", cat:'signature', kw:['geesmash','gee smash'] },
-  { id:'baby-smash', name:'Baby Smash Addict', price:15.90, desc:"3 baby smash : addict, geesmash et chicken smoked", cat:'signature', kw:['baby smash','baby '] },
-  // LES CLASSIQUES
-  { id:'double-cheese', name:'Le Double Cheese', price:7.90, desc:"2 steaks, 2 fromages, ketchup, moutarde, oignons et cornichons", cat:'classique', kw:['double cheese','double-cheese'] },
-  { id:'geant', name:'Le Géant', price:8.90, desc:"2 steaks, fromage, sauce burger, salade et oignons", cat:'classique', kw:['geant','le geant','xl'] },
-  { id:'le-chicken', name:'Le Chicken', price:8.90, desc:"Poulet pané, fromage, mayonnaise et salade", cat:'classique', kw:['le chicken','chicken classique'] },
-  { id:'le-fish', name:'Le Fish', price:8.90, desc:"Poisson pané, fromage et sauce fish", cat:'classique', kw:['le fish','fish','poisson'] },
-  // NOS MENUS
-  { id:'menu-smash', name:'Menu Smash Addict', price:13.90, desc:"Tous nos Smashed Burger au choix, servis avec frites ou potatoes et une boisson", cat:'menu', kw:['menu smash','menu signature','menu addict'] },
-  { id:'menu-duo-smash', name:'Menu Duo Smash Addict', price:22.40, desc:"Duo de Smash Burger au choix, servis avec un accompagnement frites ou potatoes et une boisson", cat:'menu', kw:['menu duo smash','duo smash addict','menu duo addict'] },
-  { id:'menu-classique', name:'Menu Classique', price:10.50, desc:"1 burger classique, frites ou potatoes et une boisson", cat:'menu', kw:['menu classique','menu original'] },
-  { id:'menu-duo', name:'Menu Duo Classique', price:16.50, desc:"Duo de burger classique au choix, frites ou potatoes et une boisson", cat:'menu', kw:['menu duo classique','duo classique','menu duo '] },
-  { id:'menu-enfant', name:'Menu Enfant', price:7.90, desc:"4 nuggets ou 1 cheeseburger, 1 frite ou potatoes, 1 Tropico mini, 1 compote et 1 jouet", cat:'menu', kw:['menu enfant','enfant','kid'] },
-  { id:'menu-cesar', name:'Menu Salade César', price:12.90, desc:"Salade, poulet, croûtons, tomates cerises, parmesan, sauce César et balsamique avec une boisson", cat:'menu', kw:['salade cesar','menu cesar','cesar'] },
-  { id:'menu-baby-smash', name:'Menu Baby Smash Addict', price:21.60, desc:"3 baby smash (addict, geesmash et chicken smoked), un accompagnement et une boisson au choix", cat:'menu', kw:['menu baby','menu baby smash'] },
-  // ADDICTIZER'S = PETITE FAIM (sides)
-  { id:'wings', name:'Wings Crispy', price:5.90, desc:"3 ou 6 pièces au choix", cat:'side', kw:['wings','ailes','crispy wings'] },
-  { id:'nuggets', name:'Nuggets', price:5.90, desc:"4 ou 8 pièces au choix", cat:'side', kw:['nuggets','nugget'] },
-  { id:'tenders', name:'Tenders', price:5.90, desc:"2 ou 4 pièces au choix", cat:'side', kw:['tenders','tender'] },
-  { id:'pop-nuggets', name:'Pop Nuggets', price:6.90, desc:"3 ou 6 pièces au choix", cat:'side', kw:['pop nuggets','pop nugget'] },
-  { id:'hamburger', name:'Hamburger', price:4.90, desc:"Steak, ketchup, moutarde, oignons et cornichons", cat:'side', kw:['hamburger '] },
-  { id:'cheese-burger', name:'Cheese Burger', price:5.40, desc:"Steak, fromage, ketchup, moutarde, oignons et cornichons", cat:'side', kw:['cheese burger','cheeseburger'] },
-  { id:'frites', name:'Frites', price:3.90, desc:"Frites maison", cat:'side', kw:['frite','frites','fries'] },
-  { id:'potatoes', name:'Potatoes', price:3.90, desc:"Potatoes maison", cat:'side', kw:['potatoes','patate','potato '] },
-  // DESSERTS
-  { id:'tiramisu', name:'Tiramisu', price:5.90, desc:"Goût au choix", cat:'dessert', kw:['tiramisu'] },
-  { id:'tiramisu-daim', name:'Tiramisu Daim Caramel', price:5.90, desc:"Tiramisu version Daim caramel", cat:'dessert', kw:['daim','caramel'] },
-  { id:'tiramisu-fraisier', name:'Tiramisu Fraisier', price:5.90, desc:"Tiramisu version fraise", cat:'dessert', kw:['fraisier','tiramisu fraise'] },
-  { id:'tiramisu-manguier', name:'Tiramisu Manguier', price:5.90, desc:"Tiramisu version mangue", cat:'dessert', kw:['manguier','tiramisu mangue'] },
-  { id:'tiramisu-pistache', name:'Tiramisu Pistache', price:6.50, desc:"Tiramisu pistache premium", cat:'dessert', kw:['pistache','tiramisu pistache'] },
-  { id:'sundae', name:'Sundae', price:4.90, desc:"Glace + topping", cat:'dessert', kw:['sundae'] },
-  { id:'milkshake', name:'Milkshake', price:5.90, desc:"Vanille, fraise, oreo, chocolat", cat:'dessert', kw:['milkshake','shake','milk shake'] },
-  { id:'croffle', name:'Croffle', price:5.90, desc:"Croissant-gaufre signature", cat:'dessert', kw:['croffle '] },
-  { id:'creamy-croffle', name:'Creamy Croffle', price:6.90, desc:"Mélange chaud-froid : glace sur lit de gaufre à pâte à croissant, parfum au choix", cat:'dessert', kw:['creamy','creamy croffle'] },
-  // BOISSONS
-  { id:'coca', name:'Coca-Cola 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['coca','cola'] },
-  { id:'coca-zero', name:'Coca-Cola Zéro 33cl', price:2.80, desc:"Canette 33cl Zéro", cat:'drink', kw:['coca zero','cola zero','zero'] },
-  { id:'coca-cherry', name:'Coca-Cola Cherry 33cl', price:2.80, desc:"Canette 33cl Cherry", cat:'drink', kw:['coca cherry','cherry'] },
-  { id:'sprite', name:'Sprite 33cl', price:2.80, desc:"Canette 33cl citron-lime", cat:'drink', kw:['sprite'] },
-  { id:'fanta-orange', name:'Fanta Orange 33cl', price:2.20, desc:"Canette 33cl orange", cat:'drink', kw:['fanta orange','fanta '] },
-  { id:'fanta-citron', name:'Fanta Citron 33cl', price:2.80, desc:"Canette 33cl citron", cat:'drink', kw:['fanta citron'] },
-  { id:'tropico-original', name:'Tropico Original 33cl', price:2.80, desc:"Canette 33cl Tropico Original", cat:'drink', kw:['tropico original','tropico '] },
-  { id:'tropico-tropical', name:'Tropico Tropical 33cl', price:2.80, desc:"Canette 33cl Tropico Tropical", cat:'drink', kw:['tropico tropical','tropical'] },
-  { id:'fuze-peche', name:'Fuze Tea Pêche Intense 33cl', price:2.80, desc:"Canette 33cl Fuze Tea pêche intense", cat:'drink', kw:['fuze peche','fuze pêche','fuze tea peche'] },
-  { id:'fuze-citron', name:'Fuze Tea Citron Vert & Menthe 33cl', price:2.80, desc:"Canette 33cl Fuze Tea citron vert & menthe", cat:'drink', kw:['fuze citron','fuze menthe','fuze tea citron'] },
-  { id:'capri-sun', name:'Capri Sun 20cl', price:2.20, desc:"Pochette 20cl", cat:'drink', kw:['capri sun','capri','caprisun'] },
-  { id:'sanpellegrino', name:'San Pellegrino 50cl', price:2.80, desc:"Eau pétillante 50cl", cat:'drink', kw:['san pellegrino','pellegrino','sanpellegrino','petillante'] },
-  { id:'evian', name:'Evian 50cl', price:2.80, desc:"Eau plate Evian 50cl", cat:'drink', kw:['evian','eau','water','minerale'] },
-  // ADDICT TEA & CITRONNADE
-  { id:'tea-hibiscus', name:'Tea Hibiscus', price:6.90, desc:"Thé glacé hibiscus signature", cat:'drink', kw:['hibiscus','tea hibiscus'] },
-  { id:'tea-pasteque', name:'Tea Pastèque', price:6.90, desc:"Thé glacé pastèque signature", cat:'drink', kw:['pasteque','tea pasteque','pastèque'] },
-  { id:'tea-peche-mangue', name:'Tea Pêche Mangue', price:6.90, desc:"Thé glacé pêche-mangue signature", cat:'drink', kw:['peche mangue','tea peche','pêche mangue','mangue'] },
-  { id:'mojito', name:'Citronnade Mojito', price:6.90, desc:"Citronnade fraîche menthe & citron", cat:'drink', kw:['mojito','citronnade','citron menthe'] },
-  { id:'mojito-fraise', name:'Citronnade Mojito Fraise', price:6.90, desc:"Citronnade Mojito version fraise", cat:'drink', kw:['mojito fraise','citronnade fraise'] },
-  { id:'curacao', name:'Citronnade Curaço Gingembre', price:6.90, desc:"Citronnade Curaço gingembre signature", cat:'drink', kw:['curacao','curaco','gingembre','curaçao'] }
+// SMASH ADDICTS (signature)
+{ id:'original', name:'Original Burger', price:10.00, desc:"Smash beef, fromage, ketchup, moutarde, oignons et cornichons. Version Veggie avec steak végétal", cat:'signature', kw:['original'] },
+{ id:'addict', name:'Addict Burger', price:11.90, desc:"Smash beef, fromage, sauce Addict, salade, tomate, oignons et cornichons. Version veggie avec steak végétal", cat:'signature', kw:['addict','signature'] },
+{ id:'smoked', name:'Smoked Burger', price:10.90, desc:"Smash beef, bacon de bœuf, fromage, sauce smoked, salade, tomates et crispy onions", cat:'signature', kw:['smoked','smoked burger'] },
+{ id:'chicky', name:'Chicky Burger', price:9.90, desc:"Filet de poulet pané, fromage, sauce chicken burger, salade et cornichons", cat:'signature', kw:['chicky','chicky burger'] },
+{ id:'chicken-purple', name:'Chicken Purple', price:10.90, desc:"Filet de poulet pané, red onion pickles, coleslaw purple sweet, aloco", cat:'signature', kw:['chicken purple','purple'] },
+{ id:'chicken-gold', name:'Chicken Gold', price:10.90, desc:"Filet de poulet pané, coleslaw spicy, confit d'oignon, aloco", cat:'signature', kw:['chicken gold','gold'] },
+{ id:'snow', name:'Snow Burger', price:10.90, desc:"Smash beef, fromage à raclette, red onion, bacon de bœuf, pomme paille", cat:'signature', kw:['snow','snowburger','raclette'] },
+{ id:'goat', name:'Goat Burger', price:10.90, desc:"Smash beef, fromage de chèvre, éclat de noix, miel, confit d'oignon, salade, tomate, mayo", cat:'signature', kw:['goat','chèvre','chevre','miel'] },
+{ id:'chicken-smoked', name:'Chicken Smoked Burger', price:10.90, desc:"Filet de poulet pané, salade, crispy oignons, cheddar & bacon de bœuf, sauce smoked", cat:'signature', kw:['chicken smoked','smoked chicken'] },
+{ id:'cheesmash', name:'Cheesmash Burger', price:10.90, desc:"Smash beef, poivron et oignons grillés, provolone, cheddar et sauce burger", cat:'signature', kw:['cheesmash','provolone','poivron'] },
+{ id:'bigsmash', name:'Bigsmash Burger', price:11.40, desc:"Smash beef, fromage, sauce big, salade, oignons et cornichons", cat:'signature', kw:['bigsmash','big smash'] },
+{ id:'geesmash', name:'Geesmash', price:11.40, desc:"Smash signature Geesmash", cat:'signature', kw:['geesmash'] },
+{ id:'baby-smash', name:'Baby Smash Addict', price:15.90, desc:"3 baby smash : addict, geesmash et chicken smoked", cat:'signature', kw:['baby smash','baby'] },
+// CLASSIQUES
+{ id:'double-cheese', name:'Le Double Cheese', price:7.90, desc:"2 steaks, 2 fromages, ketchup, moutarde, oignons et cornichons", cat:'classique', kw:['double cheese','double'] },
+{ id:'big', name:'Le Big', price:8.90, desc:"2 steaks, fromage, sauce big, salade, oignons et cornichons", cat:'classique', kw:['le big','big classique'] },
+{ id:'geant', name:'Le Géant', price:8.90, desc:"2 steaks, fromage, sauce burger, salade et oignons", cat:'classique', kw:['geant','géant'] },
+{ id:'chicken', name:'Le Chicken', price:8.90, desc:"Poulet pané, fromage, mayonnaise et salade", cat:'classique', kw:['le chicken','chicken classique'] },
+{ id:'fish', name:'Le Fish', price:8.90, desc:"Poisson pané, fromage et sauce fish", cat:'classique', kw:['fish','poisson'] },
+// MENUS
+{ id:'menu-smash', name:'Menu Smash Addict', price:13.90, desc:"1 Smash Burger au choix + frites ou potatoes + boisson", cat:'menu', kw:['menu smash','menu addict','menu signature'] },
+{ id:'menu-duo-smash', name:'Menu Duo Smash Addict', price:22.40, desc:"2 Smash Burgers au choix + accompagnement + boisson", cat:'menu', kw:['menu duo smash','duo smash'] },
+{ id:'menu-classique', name:'Menu Classique', price:10.50, desc:"1 burger classique + frites ou potatoes + boisson", cat:'menu', kw:['menu classique'] },
+{ id:'menu-duo', name:'Menu Duo Classique', price:16.50, desc:"2 burgers classiques + accompagnement + boisson", cat:'menu', kw:['menu duo','duo classique','duo '] },
+{ id:'menu-enfant', name:'Menu Enfant', price:7.90, desc:"4 nuggets ou 1 cheeseburger + frites ou potatoes + Tropico mini + compote + jouet", cat:'menu', kw:['menu enfant','enfant','kid'] },
+{ id:'menu-cesar', name:'Menu Salade César', price:12.90, desc:"Salade, poulet, croûtons, tomates cerises, parmesan, sauce César et balsamique + boisson", cat:'menu', kw:['cesar','césar','salade','salade cesar'] },
+{ id:'menu-baby', name:'Menu Baby Smash Addict', price:21.60, desc:"3 baby smash + accompagnement + boisson", cat:'menu', kw:['menu baby','baby smash menu'] },
+// SIDES
+{ id:'wings', name:'Wings Crispy', price:5.90, desc:"3 ou 6 pièces au choix", cat:'side', kw:['wings','ailes'] },
+{ id:'nuggets', name:'Nuggets', price:5.90, desc:"4 ou 8 pièces au choix", cat:'side', kw:['nuggets','nugget'] },
+{ id:'tenders', name:'Tenders', price:5.90, desc:"2 ou 4 pièces au choix", cat:'side', kw:['tenders','tender'] },
+{ id:'pop-nuggets', name:'Pop Nuggets', price:6.90, desc:"3 ou 6 pièces au choix", cat:'side', kw:['pop nuggets','pop'] },
+{ id:'hamburger', name:'Hamburger', price:4.90, desc:"Steak, ketchup, moutarde, oignons et cornichons", cat:'side', kw:['hamburger seul'] },
+{ id:'cheese', name:'Cheese Burger', price:5.40, desc:"Steak, fromage, ketchup, moutarde, oignons et cornichons", cat:'side', kw:['cheeseburger','cheese burger'] },
+{ id:'frites', name:'Frites', price:3.90, desc:"Frites maison", cat:'side', kw:['frite','frites','fries'] },
+{ id:'potatoes', name:'Potatoes', price:3.90, desc:"Potatoes épicées", cat:'side', kw:['potatoes','potato'] },
+// DESSERTS
+{ id:'tiramisu', name:'Tiramisu', price:5.90, desc:"Goût au choix (classique, daim caramel, fraisier, manguier)", cat:'dessert', kw:['tiramisu'] },
+{ id:'tiramisu-pistache', name:'Tiramisu Pistache', price:6.50, desc:"Tiramisu pistache", cat:'dessert', kw:['pistache'] },
+{ id:'sundae', name:'Sundae', price:4.90, desc:"Glace + topping", cat:'dessert', kw:['sundae'] },
+{ id:'milkshake', name:'Milkshake', price:5.90, desc:"Vanille, fraise, oreo, chocolat", cat:'dessert', kw:['milkshake','shake','milk shake'] },
+{ id:'croffle', name:'Croffle', price:5.90, desc:"Croissant-gaufre signature", cat:'dessert', kw:['croffle'] },
+{ id:'creamy-croffle', name:'Creamy Croffle', price:6.90, desc:"Glace + gaufre pâte à croissant + parfum au choix", cat:'dessert', kw:['creamy','creamy croffle'] },
+// BOISSONS
+{ id:'coca', name:'Coca-Cola 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['coca','cola','coca cola'] },
+{ id:'coca-zero', name:'Coca-Cola Zéro 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['coca zero','zéro','zero'] },
+{ id:'coca-cherry', name:'Coca-Cola Cherry 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['cherry','coca cherry'] },
+{ id:'sprite', name:'Sprite 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['sprite'] },
+{ id:'fanta-orange', name:'Fanta Orange 33cl', price:2.20, desc:"Canette 33cl", cat:'drink', kw:['fanta orange','orange'] },
+{ id:'fanta-citron', name:'Fanta Citron 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['fanta citron','citron'] },
+{ id:'tropico', name:'Tropico Original 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['tropico','tropico original'] },
+{ id:'tropico-tropical', name:'Tropico Tropical 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['tropical'] },
+{ id:'fuze-peche', name:'Fuze Tea Pêche 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['fuze peche','fuze pêche','peche intense'] },
+{ id:'fuze-citron', name:'Fuze Tea Citron Menthe 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['fuze citron','citron menthe'] },
+{ id:'capri', name:'Capri Sun 20cl', price:2.20, desc:"Pochette 20cl", cat:'drink', kw:['capri','capri sun'] },
+{ id:'pellegrino', name:'San Pellegrino 50cl', price:2.80, desc:"Bouteille 50cl", cat:'drink', kw:['pellegrino','san pellegrino','gazeuse'] },
+{ id:'evian', name:'Evian 50cl', price:2.80, desc:"Bouteille 50cl", cat:'drink', kw:['eau','evian','water','minerale'] },
+// TEA & CITRONNADE
+{ id:'tea-hibiscus', name:'Tea Hibiscus', price:6.90, desc:"Tea hibiscus signature", cat:'drink', kw:['hibiscus','tea hibiscus'] },
+{ id:'tea-pasteque', name:'Tea Pastèque', price:6.90, desc:"Tea pastèque signature", cat:'drink', kw:['pasteque','pastèque'] },
+{ id:'tea-peche-mangue', name:'Tea Pêche Mangue', price:6.90, desc:"Tea pêche mangue signature", cat:'drink', kw:['peche mangue','pêche mangue'] },
+{ id:'mojito', name:'Citronnade Mojito', price:6.90, desc:"Citronnade fraîche menthe & citron", cat:'drink', kw:['mojito','citronnade'] },
+{ id:'mojito-fraise', name:'Citronnade Mojito Fraise', price:6.90, desc:"Citronnade mojito fraise", cat:'drink', kw:['mojito fraise','fraise mojito'] },
+{ id:'curaco', name:'Citronnade Curaço Gingembre', price:6.90, desc:"Citronnade curaço gingembre", cat:'drink', kw:['curaco','gingembre'] }
 ];
 
 /* ============ BOISSONS NON DISPONIBLES (alternatives à proposer) ============ */
@@ -469,16 +467,16 @@ function parseFullOrder(rawMsg){
   else if(/fanta citron/.test(n)) found.drink = get('fanta-citron');
   else if(/fanta/.test(n)) found.drink = get('fanta-orange');
   else if(/tropico tropical|tropical/.test(n)) found.drink = get('tropico-tropical');
-  else if(/tropico/.test(n)) found.drink = get('tropico-original');
+  else if(/tropico/.test(n)) found.drink = get('tropico');
   else if(/fuze.*peche|fuze.*pêche|fuze peche|peche fuze/.test(n)) found.drink = get('fuze-peche');
   else if(/fuze.*citron|fuze.*menthe|fuze citron/.test(n)) found.drink = get('fuze-citron');
   else if(/fuze ?tea|ice ?tea|icetea|the glace|thé glacé/.test(n)) found.drink = get('fuze-peche');
-  else if(/capri ?sun|capri/.test(n)) found.drink = get('capri-sun');
-  else if(/san ?pellegrino|pellegrino|petillante|pétillante/.test(n)) found.drink = get('sanpellegrino');
+  else if(/capri ?sun|capri/.test(n)) found.drink = get('capri');
+  else if(/san ?pellegrino|pellegrino|petillante|pétillante/.test(n)) found.drink = get('pellegrino');
   else if(/evian|\beau\b|water|minerale/.test(n)) found.drink = get('evian');
   else if(/mojito fraise/.test(n)) found.drink = get('mojito-fraise');
   else if(/mojito|citronnade mojito/.test(n)) found.drink = get('mojito');
-  else if(/curacao|curaco|curaçao|gingembre/.test(n)) found.drink = get('curacao');
+  else if(/curacao|curaco|curaçao|gingembre/.test(n)) found.drink = get('curaco');
   else if(/citronnade/.test(n)) found.drink = get('mojito');
   else if(/hibiscus/.test(n)) found.drink = get('tea-hibiscus');
   else if(/pasteque|pastèque/.test(n)) found.drink = get('tea-pasteque');
