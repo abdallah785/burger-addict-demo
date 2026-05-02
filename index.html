@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ff4d2e">
+<meta name="apple-mobile-web-app-title" content="Burger Addict">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Burger Addict — Commande en ligne</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23FFD60A'/%3E%3Ctext x='50' y='72' font-size='62' text-anchor='middle' font-weight='900' font-family='Arial' fill='%23000'%3EB%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --primary:#ff4d2e;
+    --primary-dark:#e63d1f;
+    --bg:#000;
+    --bubble-bot:#1a1a1a;
+    --bubble-user:#ff4d2e;
+    --text:#fff;
+    --text-dim:#888;
+    --avatar-bg:#FFD60A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;height:100dvh;overscroll-behavior:none}
+
+  .header{
+    background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
+    padding:12px 16px;display:flex;align-items:center;gap:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.4);z-index:10;flex-shrink:0
+  }
+  .avatar{width:42px;height:42px;border-radius:50%;background:var(--avatar-bg);display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:20px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .header-info{flex:1;min-width:0}
+  .header-info .name{font-weight:700;font-size:16px;letter-spacing:.2px}
+  .header-info .status{font-size:13px;opacity:.95;display:flex;align-items:center;gap:5px;margin-top:1px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px #22c55e}
+  .header-icons{display:flex;gap:6px}
+  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.18);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .icon-btn:active{background:rgba(255,255,255,.35);transform:scale(.92)}
+
+  /* Bandeaux commande — style brief */
+  .banners{flex-shrink:0;background:var(--bg);z-index:5}
+  .order-banner{
+    padding:12px 14px;font-size:13.5px;font-weight:600;
+    border-bottom:1px solid;animation:slideDown .35s cubic-bezier(0.4, 0, 0.2, 1);
+    position:relative
+  }
+  .banner-row{display:flex;align-items:center;gap:10px}
+  .banner-text{flex:1;line-height:1.35}
+  .banner-text b{font-weight:800}
+  .order-banner.pending{
+    background:rgba(255,77,46,.15);
+    border-color:rgba(255,77,46,.35);
+    color:#ff8a6c
+  }
+  .order-banner.accepted{
+    background:rgba(34,197,94,.15);
+    border-color:rgba(34,197,94,.35);
+    color:#4ade80
+  }
+  .banner-btn{
+    background:rgba(34,197,94,.2);
+    border:1px solid rgba(34,197,94,.5);
+    color:#4ade80;
+    padding:7px 13px;border-radius:10px;font-size:12.5px;font-weight:700;
+    cursor:pointer;font-family:inherit;white-space:nowrap;transition:.2s
+  }
+  .banner-btn:active{background:rgba(34,197,94,.35);transform:scale(.95)}
+  .banner-icon{display:inline-block;animation:iconPulse 1.5s ease-in-out infinite;font-size:16px}
+  .banner-progress{
+    height:3px;background:rgba(34,197,94,.2);border-radius:2px;
+    margin-top:8px;overflow:hidden
+  }
+  .banner-progress-fill{
+    height:100%;background:#4ade80;width:5%;
+    animation:progressFill 60s linear forwards;
+    box-shadow:0 0 6px rgba(74,222,128,.6)
+  }
+  .pulse-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 1.2s infinite;flex-shrink:0}
+  @keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  @keyframes iconPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+  @keyframes progressFill{from{width:5%}to{width:95%}}
+
+  .chat{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+  .chat::-webkit-scrollbar{width:0}
+
+  .msg{display:flex;gap:8px;align-items:flex-end;animation:fadeIn .25s ease-out}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .msg.user{justify-content:flex-end}
+  .mini-avatar{width:30px;height:30px;border-radius:50%;background:var(--avatar-bg);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:13px;flex-shrink:0}
+  .bubble-wrap{display:flex;flex-direction:column;max-width:80%}
+  .msg.user .bubble-wrap{align-items:flex-end}
+  .bubble{padding:11px 15px;border-radius:18px;font-size:15px;line-height:1.45;word-wrap:break-word;white-space:pre-wrap;overflow-wrap:break-word}
+  .msg.bot .bubble{background:var(--bubble-bot);color:#f5f5f5;border-bottom-left-radius:4px}
+  .msg.user .bubble{background:var(--bubble-user);color:#fff;border-bottom-right-radius:4px;font-weight:500}
+  .timestamp{font-size:10.5px;color:var(--text-dim);margin-top:3px;padding:0 4px}
+
+  .typing{display:flex;gap:4px;padding:6px 4px}
+  .typing span{width:7px;height:7px;border-radius:50%;background:#888;animation:bounce 1.3s infinite}
+  .typing span:nth-child(2){animation-delay:.15s}
+  .typing span:nth-child(3){animation-delay:.3s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+
+  /* Choice buttons sous les messages bot */
+  .choice-buttons{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;margin-left:38px;
+    animation:fadeIn .3s ease-out
+  }
+  .choice-btn{
+    padding:9px 15px;background:rgba(255,77,46,.12);
+    border:1.5px solid var(--primary);border-radius:22px;
+    color:var(--primary);font-size:13.5px;font-weight:600;
+    cursor:pointer;transition:.15s;font-family:inherit;white-space:nowrap
+  }
+  .choice-btn:active{background:var(--primary);color:#fff;transform:scale(.96)}
+  .choice-btn.disabled{opacity:.35;cursor:not-allowed;pointer-events:none;border-style:dashed}
+
+  .quick-replies{padding:8px 12px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;background:var(--bg)}
+  .quick-replies::-webkit-scrollbar{display:none}
+  .chip{
+    background:transparent;border:1.5px solid var(--primary);color:var(--primary);
+    padding:8px 14px;border-radius:22px;font-size:13.5px;font-weight:600;
+    white-space:nowrap;cursor:pointer;transition:.2s;flex-shrink:0;font-family:inherit
+  }
+  .chip:active{background:var(--primary);color:#fff;transform:scale(.95)}
+
+  .input-zone{padding:8px 12px calc(10px + env(safe-area-inset-bottom));background:var(--bg);flex-shrink:0;border-top:1px solid #1a1a1a}
+  .input-row{display:flex;gap:8px;align-items:center}
+  .input-field{
+    flex:1;background:#1a1a1a;border:1px solid #2a2a2a;color:#fff;
+    padding:12px 18px;border-radius:24px;font-size:15px;
+    outline:none;font-family:inherit;-webkit-appearance:none
+  }
+  .input-field:focus{border-color:var(--primary)}
+  .input-field::placeholder{color:#666}
+  .send-btn{width:44px;height:44px;border-radius:50%;background:var(--primary);border:none;color:#fff;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.2s;box-shadow:0 2px 8px rgba(255,77,46,.4)}
+  .send-btn:active{transform:scale(.9);background:var(--primary-dark)}
+  .footer{text-align:center;font-size:10.5px;color:#555;padding:6px 0 2px}
+
+  /* Carte de confirmation stylée */
+  .success-card{
+    background:linear-gradient(135deg,rgba(255,77,46,.12) 0%,rgba(255,77,46,.04) 100%);
+    border:1px solid rgba(255,77,46,.4);
+    border-radius:14px;padding:20px 14px;text-align:center;margin-top:2px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05)
+  }
+  .success-card .check-line{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px;letter-spacing:.2px}
+  .success-card .order-num{
+    font-size:36px;font-weight:900;color:var(--primary);
+    letter-spacing:2px;line-height:1;margin:10px 0 4px;
+    text-shadow:0 0 20px rgba(255,77,46,.4)
+  }
+  .success-card .delay-info{font-size:13px;color:#bbb;line-height:1.55;margin-top:10px}
+  .success-card .delay-info b{color:#fff;font-weight:700}
+
+  .order-card{background:#0d0d0d;border:1px solid #2a2a2a;border-radius:12px;padding:12px;margin-top:6px;font-size:14px}
+  .order-card h4{color:var(--primary);font-size:12px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+  .order-line{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #2a2a2a;gap:8px}
+  .order-line:last-child{border:none}
+  .order-line span:first-child{flex:1}
+  .order-total{display:flex;justify-content:space-between;font-weight:700;margin-top:8px;padding-top:10px;border-top:2px solid var(--primary);color:var(--primary);font-size:16px}
+
+  b{color:var(--primary);font-weight:600}
+  .msg.user .bubble b{color:#fff;text-decoration:underline}
+
+  /* Modal Reçu */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;animation:fadeIn .2s ease-out}
+  .modal-overlay.show{display:flex}
+  .receipt{background:#fffaf0;color:#1a1a1a;border-radius:14px;max-width:340px;width:100%;max-height:92vh;overflow-y:auto;font-family:'Courier New',monospace;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:slideUp .3s ease-out}
+  @keyframes slideUp{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .receipt-logo-wrap{text-align:center;padding:18px 16px 10px}
+  .receipt-logo-circle{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:56px;height:56px;border-radius:50%;background:#FFD60A;
+    font-size:30px;font-weight:900;color:#000;
+    margin-bottom:8px;box-shadow:0 3px 10px rgba(0,0,0,.15)
+  }
+  .receipt-brand{font-size:18px;font-weight:900;color:var(--primary);letter-spacing:1.5px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+  .receipt-divider-strong{border-top:2px dashed #999;margin:0 16px}
+  .receipt-num-big{
+    text-align:center;padding:14px 16px 10px;
+    font-size:32px;font-weight:900;color:var(--primary);letter-spacing:2px;
+    font-family:'Courier New',monospace
+  }
+  .receipt-date{
+    text-align:center;font-size:11.5px;color:#666;line-height:1.5;
+    padding:0 16px 12px;font-family:-apple-system,BlinkMacSystemFont,sans-serif
+  }
+  .receipt-body{padding:14px 18px}
+  .receipt-line{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;line-height:1.4;gap:8px}
+  .receipt-line span:first-child{flex:1}
+  .receipt-divider{border-top:2px dashed #999;margin:10px 0}
+  .receipt-total{display:flex;justify-content:space-between;font-size:17px;font-weight:900;color:var(--primary)}
+  .receipt-info{font-size:12.5px;color:#444;margin-top:10px;line-height:1.7;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+  .receipt-info b{color:#1a1a1a}
+  .receipt-status{
+    text-align:center;padding:12px 16px;background:#dcfce7;color:#166534;
+    font-weight:700;font-size:13px;border-top:2px dashed #999;font-family:-apple-system,BlinkMacSystemFont,sans-serif
+  }
+  .receipt-halal{
+    text-align:center;padding:8px 16px;font-size:11.5px;color:#15803d;
+    font-weight:700;background:#f0fdf4;border-top:1px dashed #ccc;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.3px
+  }
+  .receipt-qr-wrap{text-align:center;padding:14px 16px 6px;background:#fff}
+  .receipt-qr{
+    display:inline-block;background:#fff;padding:6px;border-radius:6px;
+    box-shadow:0 1px 3px rgba(0,0,0,.1)
+  }
+  .receipt-qr svg{display:block;width:80px;height:80px}
+  .receipt-qr-label{font-size:10px;color:#888;margin-top:4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+  .receipt-footer{text-align:center;font-size:10px;color:#999;padding:8px 16px 14px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;border-top:1px solid #eee}
+  .receipt-actions{display:flex;gap:8px;padding:12px 16px 16px;background:#fff;border-top:1px solid #eee}
+  .receipt-btn{flex:1;padding:12px;border-radius:10px;border:none;font-weight:700;font-size:13.5px;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,sans-serif;transition:.2s;display:flex;align-items:center;justify-content:center;gap:5px}
+  .receipt-btn.close{background:#e5e7eb;color:#1a1a1a}
+  .receipt-btn.share{background:#3b82f6;color:#fff}
+  .receipt-btn.new{background:var(--primary);color:#fff}
+  .receipt-btn:active{transform:scale(.96)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="avatar">B</div>
+  <div class="header-info">
+    <div class="name">Burger Addict</div>
+    <div class="status"><span class="dot"></span>Assistant IA · En ligne 24/7</div>
+  </div>
+  <div class="header-icons">
+    <button class="icon-btn" onclick="resetChat()" aria-label="Recommencer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+    </button>
+    <button class="icon-btn" aria-label="Paramètres">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="banners" id="banners"></div>
+
+<div class="chat" id="chat"></div>
+
+<div class="quick-replies">
+  <button class="chip" onclick="quickSend('Commander')">🛒 Commander</button>
+  <button class="chip" onclick="quickSend('Le menu')">📋 Le menu</button>
+  <button class="chip" onclick="quickSend('Halal ?')">✅ Halal ?</button>
+  <button class="chip" onclick="quickSend('Horaires')">🕒 Horaires</button>
+</div>
+
+<div class="input-zone">
+  <div class="input-row">
+    <input id="userInput" class="input-field" placeholder="Posez votre question..." autocomplete="off" autocapitalize="sentences">
+    <button class="send-btn" onclick="handleSend()" aria-label="Envoyer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
+  </div>
+  <div class="footer">Propulsé par IAbot</div>
+</div>
+
+<div class="modal-overlay" id="receiptModal" onclick="if(event.target===this) closeReceipt()">
+  <div class="receipt" id="receiptContent"></div>
+</div>
+
+<script>
+/* ============ MENU OFFICIEL BURGER ADDICT ============ */
+const ITEMS = [
+  // SIGNATURE
+  { id:'addict', name:'Addict Burger', price:9.90, desc:"Smash beef, fromage, sauce Addict signature, salade, tomate, oignons et cornichons", cat:'signature', kw:['addict','signature'] },
+  { id:'snow', name:'Snow Burger', price:10.90, desc:"Filet de poulet pané, salade, crispy oignons, cheddar & bacon de bœuf, sauce smoked", cat:'signature', kw:['snow','snowburger'] },
+  { id:'goat', name:'Goat Burger', price:10.90, desc:"Smash beef, poivron et oignons grillés, provolone, cheddar et sauce burger", cat:'signature', kw:['goat','provolone','poivron'] },
+  { id:'bigsmash', name:'Bigsmash Burger', price:11.40, desc:"Double smash beef, fromage, sauce big, salade, oignons et cornichons", cat:'signature', kw:['bigsmash','big smash','big '] },
+  // CLASSIQUES
+  { id:'original', name:'Original Burger', price:10.00, desc:"Smash beef, fromage, ketchup, moutarde, oignons et cornichons", cat:'classique', kw:['original','classique simple'] },
+  { id:'chicken-smoked', name:'Chicken Smoked Burger', price:10.90, desc:"Filet de poulet pané, fromage, sauce chicken, salade et cornichons", cat:'classique', kw:['chicken smoked','chicken burger','smoked chicken'] },
+  { id:'geant', name:'Le Géant', price:8.90, desc:"Burger XL généreux, smash beef double", cat:'classique', kw:['geant','xl'] },
+  // MENUS
+  { id:'menu-smash', name:'Menu Smash Addict', price:13.90, desc:"1 burger signature + frites + boisson", cat:'menu', kw:['menu smash','menu signature','menu addict'] },
+  { id:'menu-classique', name:'Menu Classique', price:10.50, desc:"1 burger classique + frites + boisson", cat:'menu', kw:['menu classique','menu original'] },
+  { id:'menu-duo', name:'Menu Duo Classique', price:16.50, desc:"2 burgers classiques + frites + boisson", cat:'menu', kw:['menu duo','duo classique','duo '] },
+  { id:'menu-enfant', name:'Menu Enfant', price:7.90, desc:"Mini burger + frites + boisson + dessert", cat:'menu', kw:['menu enfant','enfant','kid'] },
+  // SIDES
+  { id:'tenders', name:'Tenders (5pcs)', price:5.90, desc:"5 tenders de poulet croustillants", cat:'side', kw:['tenders','tender'] },
+  { id:'big-tenders', name:'Big Tenders', price:6.90, desc:"Format XL", cat:'side', kw:['big tenders','xl tenders'] },
+  { id:'wings', name:'Wings Crispy', price:5.90, desc:"Ailes de poulet croustillantes", cat:'side', kw:['wings','ailes','crispy wings'] },
+  { id:'frites', name:'Frites', price:3.90, desc:"Frites maison", cat:'side', kw:['frite','frites','fries','potato'] },
+  { id:'nuggets', name:'Nuggets', price:5.50, desc:"Nuggets de poulet", cat:'side', kw:['nuggets','nugget','bouchee'] },
+  // DESSERTS
+  { id:'tiramisu', name:'Tiramisu', price:5.90, desc:"Tiramisu maison", cat:'dessert', kw:['tiramisu'] },
+  { id:'croffle', name:'Croffle', price:5.90, desc:"Croissant-gaufre signature", cat:'dessert', kw:['croffle '] },
+  { id:'creamy-croffle', name:'Creamy Croffle', price:6.90, desc:"Croffle crémeux signature", cat:'dessert', kw:['creamy','creamy croffle'] },
+  { id:'sundae', name:'Sundae', price:4.90, desc:"Glace + topping", cat:'dessert', kw:['sundae'] },
+  // BOISSONS
+  { id:'milkshake', name:'Milkshake', price:5.90, desc:"Vanille, fraise, oreo, chocolat", cat:'drink', kw:['milkshake','shake','milk shake'] },
+  { id:'mojito', name:'Citronnade Mojito', price:6.90, desc:"Citronnade fraîche menthe & citron", cat:'drink', kw:['mojito','citronnade','citron menthe'] },
+  { id:'coca', name:'Coca-Cola 33cl', price:2.50, desc:"Canette 33cl", cat:'drink', kw:['coca','cola'] },
+  { id:'eau', name:'Eau minérale 50cl', price:1.50, desc:"Bouteille 50cl", cat:'drink', kw:['eau','water','minerale'] }
+];
+
+/* ============ BOISSONS NON DISPONIBLES (alternatives à proposer) ============ */
+const UNAVAILABLE_DRINKS = ['sprite','fanta','oasis','7up','ice tea','icetea','seven up','fuze tea','fuzetea','the glace','pepsi'];
+
+/* ============ ÉTAT ============ */
+let chatState = {
+  step:'idle',
+  order:{ items:[], pendingItem:null, mode:null, name:null }
+};
+const orderHistory = {};
+
+const chatEl = document.getElementById('chat');
+const inputEl = document.getElementById('userInput');
+const bannersEl = document.getElementById('banners');
+
+function timeNow(){ const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
+
+/* ============ AFFICHAGE MESSAGES ============ */
+function appendMessage(text, sender, isHTML=false, choices=null){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg '+sender;
+  const mini = sender === 'bot' ? '<div class="mini-avatar">B</div>' : '';
+  wrap.innerHTML = mini+'<div class="bubble-wrap"><div class="bubble"></div><div class="timestamp">'+timeNow()+'</div></div>';
+  chatEl.appendChild(wrap);
+  const bubble = wrap.querySelector('.bubble');
+  if(isHTML) bubble.innerHTML = text; else bubble.textContent = text;
+
+  // Désactiver les anciens choice-buttons
+  document.querySelectorAll('.choice-buttons:not(.disabled-group) .choice-btn').forEach(b => b.classList.add('disabled'));
+  document.querySelectorAll('.choice-buttons').forEach(g => g.classList.add('disabled-group'));
+
+  // Ajouter de nouveaux choice-buttons si fournis
+  if(choices && sender === 'bot' && choices.length){
+    const div = document.createElement('div');
+    div.className = 'choice-buttons';
+    choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = c.label;
+      btn.onclick = () => {
+        const value = c.value || c.label;
+        // Désactiver tout le groupe
+        div.querySelectorAll('.choice-btn').forEach(b => b.classList.add('disabled'));
+        div.classList.add('disabled-group');
+        appendMessage(value, 'user');
+        setTimeout(()=> processMessage(value), 200);
+      };
+      div.appendChild(btn);
+    });
+    chatEl.appendChild(div);
+  }
+  scrollDown();
+}
+
+function showTyping(){
+  const wrap = document.createElement('div');
+  wrap.className = 'msg bot'; wrap.id = 'typing-indicator';
+  wrap.innerHTML = '<div class="mini-avatar">B</div><div class="bubble-wrap"><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>';
+  chatEl.appendChild(wrap); scrollDown();
+}
+function hideTyping(){ const t=document.getElementById('typing-indicator'); if(t) t.remove(); }
+function scrollDown(){ requestAnimationFrame(()=>{ chatEl.scrollTop = chatEl.scrollHeight; }); }
+
+function botReply(text, isHTML=false, delay=900, choices=null){
+  showTyping();
+  setTimeout(()=>{ hideTyping(); appendMessage(text, 'bot', isHTML, choices); }, delay);
+}
+
+/* ============ NLP ============ */
+function normalize(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim()+' '; }
+function any(txt, arr){ return arr.some(k => txt.includes(k)); }
+function findItem(rawTxt, categories=null){
+  const n = normalize(rawTxt);
+  let best = null, bestLen = 0;
+  for(const it of ITEMS){
+    if(categories && !categories.includes(it.cat)) continue;
+    for(const k of it.kw){
+      const nk = normalize(k).trim();
+      if(n.includes(nk) && nk.length > bestLen){ best = it; bestLen = nk.length; }
+    }
+  }
+  return best;
+}
+function get(id){ return ITEMS.find(i=>i.id===id); }
+
+/* ============ MENU AFFICHAGE ============ */
+function buildMenuHTML(){
+  const cat = (label, items) => {
+    let h = "<br><b>"+label+"</b><br>";
+    items.forEach(b=>{ h += "• "+b.name+" — <b>"+b.price.toFixed(2)+"€</b><br>"; });
+    return h;
+  };
+  let h = "<b>📋 NOTRE CARTE</b><br>";
+  h += cat("🔥 SIGNATURE", ITEMS.filter(i=>i.cat==='signature'));
+  h += cat("🍔 CLASSIQUES", ITEMS.filter(i=>i.cat==='classique'));
+  h += cat("🎁 NOS MENUS", ITEMS.filter(i=>i.cat==='menu'));
+  h += cat("🍟 ACCOMPAGNEMENTS", ITEMS.filter(i=>i.cat==='side'));
+  h += cat("🧁 DESSERTS", ITEMS.filter(i=>i.cat==='dessert'));
+  h += cat("🥤 BOISSONS", ITEMS.filter(i=>i.cat==='drink'));
+  h += "<br>💡 <i>Tapez un nom de plat ou \"commander\" pour démarrer.</i>";
+  return h;
+}
+
+/* ============ PARSING COMPLET (UNE PHRASE = COMMANDE) ============ */
+function parseFullOrder(rawMsg){
+  const n = normalize(rawMsg);
+  const found = { burger:null, drink:null, side:null, quantity:1, hasMenu:false, hasSeul:false, hasPotatoes:false };
+
+  // Quantité
+  const numWords = { 'deux':2, 'trois':3, 'quatre':4, 'cinq':5 };
+  for(const w in numWords){ if(n.includes(' '+w+' ') || n.startsWith(w+' ')){ found.quantity = numWords[w]; break; } }
+  const m = n.match(/(\d+)\s*(x\s*)?(burger|addict|snow|goat|original|chicky|chicken|big|bigsmash|geant|smash)/);
+  if(m) found.quantity = Math.min(parseInt(m[1]), 9);
+
+  // Burger (prend le plus long match)
+  let bestLen = 0;
+  for(const it of ITEMS){
+    if(!['signature','classique'].includes(it.cat)) continue;
+    for(const k of it.kw){
+      const nk = normalize(k).trim();
+      if(nk.length > 2 && n.includes(nk) && nk.length > bestLen){ found.burger = it; bestLen = nk.length; }
+    }
+  }
+
+  // Boisson (uniquement boissons disponibles)
+  if(/coca|cola/.test(n)) found.drink = get('coca');
+  else if(/\beau\b|water|minerale/.test(n)) found.drink = get('eau');
+  else if(/mojito|citronnade/.test(n)) found.drink = get('mojito');
+  else if(/milkshake|milk shake/.test(n)) found.drink = get('milkshake');
+  // Boisson non dispo détectée → flag pour rediriger
+  if(!found.drink && /sprite|fanta|oasis|7 ?up|seven up|ice ?tea|icetea|fuze ?tea|fuzetea|the glace|pepsi/.test(n)){
+    found.unavailableDrink = true;
+  }
+
+  // Side
+  if(/frite|fries/.test(n)) found.side = get('frites');
+  else if(/tenders/.test(n)) found.side = get('tenders');
+  else if(/wings|aile/.test(n)) found.side = get('wings');
+  else if(/nuggets/.test(n)) found.side = get('nuggets');
+
+  // Mots-clés menu/seul/potatoes
+  if(/\bmenu\b|formule/.test(n)) found.hasMenu = true;
+  if(/\bseul\b|tout seul|sans menu|sans frite/.test(n)) found.hasSeul = true;
+  if(/potatoes|patate/.test(n)) found.hasPotatoes = true;
+
+  return found;
+}
+
+/* ============ BOISSONS ALTERNATIVES (qu'on n'a pas) ============ */
+const ALT_LIST = "<b>Coca</b>, <b>Citronnade Mojito</b>, <b>Eau</b> ou <b>Milkshake</b>";
+function handleAlternativeDrinks(msg){
+  if(/\bpepsi\b/.test(msg)){
+    return "On n'a pas de <b>Pepsi</b>, on a du <b>Coca-Cola</b> à la place 😊 Ça vous va ?";
+  }
+  if(/\bsprite\b/.test(msg)){
+    return "On n'a pas de <b>Sprite</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+  }
+  if(/\bfanta\b/.test(msg)){
+    return "On n'a pas de <b>Fanta</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+  }
+  if(/\boasis\b/.test(msg)){
+    return "On n'a pas d'<b>Oasis</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+  }
+  if(/7 ?up|seven up/.test(msg)){
+    return "On n'a pas de <b>7up</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+  }
+  if(/ice ?tea|icetea|fuze ?tea|fuzetea|the glace|thé glacé/.test(msg)){
+    return "On n'a pas d'<b>Ice Tea</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+  }
+  if(/\bbiere\b|\bvin\b|alcool|champagne|whisky|rhum|cocktail/.test(msg)){
+    return "Nous sommes <b>100% halal</b> donc pas d'alcool 🚫🍷<br>On a <b>Coca</b>, <b>Citronnade Mojito</b> sans alcool 🍋, <b>Eau</b> ou <b>Milkshake</b>.";
+  }
+  if(/\bredbull\b|red bull|monster|energie|energy drink/.test(msg)){
+    return "Pas de boisson énergisante chez nous 😊 On a "+ALT_LIST+".";
+  }
+  if((/\bjus\b|orange|pomme|abricot|ananas/.test(msg)) && !msg.includes('avec')){
+    return "Pas de jus de fruits actuellement 😊 On a <b>Coca</b>, <b>Citronnade Mojito</b> 🍋, <b>Eau</b> ou <b>Milkshake</b> qui font le job !";
+  }
+  return null;
+}
+
+/* ============ QUESTIONS SUR LES PLATS ============ */
+function answerAboutDish(rawMsg, msg){
+  // "C'est quoi le X" / "Y a quoi dans X" / "Composition X"
+  if(/c est quoi|qu est ce que|y a quoi|qu y a|y a t il quoi|composition|ingredient|compose|qu est ce qu il y a/.test(msg)){
+    const item = findItem(rawMsg);
+    if(item){
+      return "🍔 <b>"+item.name+"</b> : "+item.desc+". <b>"+item.price.toFixed(2)+"€</b>. Tenté ?";
+    }
+  }
+  // "Différence entre X et Y"
+  if(/difference|differen|compar/.test(msg)){
+    if(/snow/.test(msg) && /addict/.test(msg)){
+      return "🆚 <b>Snow vs Addict</b> :<br>• <b>Snow</b> ❄️ → poulet pané crispy + bacon, plus fun<br>• <b>Addict</b> 🔥 → smash beef + sauce signature, plus classique<br>Snow = poulet, Addict = bœuf. Lequel vous tente ?";
+    }
+    if(/goat/.test(msg) && /addict/.test(msg)){
+      return "🆚 <b>Goat vs Addict</b> :<br>• <b>Goat</b> 🐐 → provolone fondu + légumes grillés, plus original<br>• <b>Addict</b> 🔥 → fromage + sauce signature, plus classique";
+    }
+    if(/big/.test(msg) && /geant/.test(msg)){
+      return "🆚 <b>Bigsmash vs Géant</b> :<br>• <b>Bigsmash</b> 💪 → 11,40€, double smash + sauce big<br>• <b>Géant</b> → 8,90€, XL plus simple, meilleur rapport quantité/prix";
+    }
+  }
+  return null;
+}
+
+/* ============ INTENTIONS HUMAINES ============ */
+function handleHumanIntent(msg){
+  // Pour 2 personnes
+  if(/pour deux|pour 2|a deux|a 2|en couple|partager|partage/.test(msg)){
+    const m = get('menu-duo');
+    return { text:"Pour 2 personnes, je vous recommande le <b>Menu Duo Classique</b> 👥 — 2 burgers + frites + boisson pour <b>16,50€</b>. Très bon rapport !", item:m, action:'suggest' };
+  }
+  // Pour enfant
+  if(/pour mon enfant|pour mon fils|pour ma fille|pour les enfants|pour le petit|kids|menu kid/.test(msg)){
+    const m = get('menu-enfant');
+    return { text:"Pour les petits, on a le <b>Menu Enfant</b> 👶 — mini burger + frites + boisson + dessert pour <b>7,90€</b>. Parfait !", item:m, action:'suggest' };
+  }
+  // Copieux / grosse faim
+  if(/copieux|consist|nourrir|cale|tres faim|grosse faim|mega faim|affame/.test(msg)){
+    return { text:"Pour une grosse faim, je vous propose :", choices:[
+      {label:'💪 Bigsmash 11,40€', value:'Bigsmash Burger'},
+      {label:'🔥 Le Géant 8,90€', value:'Le Géant'},
+      {label:'👥 Menu Duo 16,50€', value:'Menu Duo Classique'}
+    ] };
+  }
+  // Rapide
+  if(/rapide|vite|presse|j ai pas le temps/.test(msg)){
+    return { text:"Le plus rapide à préparer, c'est le <b>Menu Classique</b> 🍔 — <b>10,50€</b>. Notre best-seller rapport qualité/prix-rapidité !", item:get('menu-classique'), action:'suggest' };
+  }
+  return null;
+}
+
+/* ============ INTELLIGENCE FAST-FOOD ============ */
+function getSmartSuggestion(rawMsg, msg){
+  // SUPRISE / CHOIX AUTO
+  if(any(msg, ['surprise','choisis pour moi','choisis moi','etonne moi','propose moi','recommande'])){
+    return { item:get('snow'), text:"Le <b>Snow Burger</b> ❄️ est notre chouchou : poulet pané croustillant, crispy oignons, cheddar et bacon de bœuf, sauce smoked. <b>10,90€</b>. Tenté ?", action:'suggest' };
+  }
+  if(any(msg, ['moins cher','pas cher','economique','premier prix','petit budget'])){
+    return { item:get('geant'), text:"Le <b>Géant</b> à <b>8,90€</b> ! Burger XL généreux pour le prix d'un classique. On part dessus ?", action:'suggest' };
+  }
+  if(any(msg, ['le meilleur','le top','le mieux','votre best','best seller','populaire'])){
+    return { item:get('addict'), text:"Notre <b>Addict Burger</b> 🔥 — c'est notre signature et le préféré des clients. <b>9,90€</b>. On y va ?", action:'suggest' };
+  }
+  // GOÛTS / PRÉFÉRENCES
+  if(any(msg, ['epice','spicy','piquant',' fort ','releve','pimente','feu '])){
+    return { item:get('addict'), text:"Notre <b>Addict Burger</b> 🔥 est parfait pour ça ! Sauce Addict signature, parfait équilibre. <b>9,90€</b>. Je vous le mets ?", action:'suggest' };
+  }
+  if(any(msg, [' doux ','simple ','basique','sans chichi','traditionnel','normal '])){
+    return { item:get('original'), text:"L'<b>Original Burger</b> est parfait alors : smash beef, fromage, ketchup-moutarde, oignons et cornichons. Le vrai classique, <b>10€</b>.", action:'suggest' };
+  }
+  if(any(msg, [' gros ','grand','xl','xxl','genereux','beaucoup ','grosse faim','tres faim','affame','double','deux steaks','extra viande'])){
+    return { item:get('bigsmash'), text:"Le <b>Bigsmash</b> 💪 — double steak smash, fromage, sauce big. <b>11,40€</b>. Pour les vraies grosses faims !", action:'suggest' };
+  }
+  if(any(msg, ['special','unique','qui change','different','original ','originalite','sortir des sentiers'])){
+    return { item:get('goat'), text:"Le <b>Goat Burger</b> 🐐 — provolone fondu, poivron et oignons grillés. Ça change ! <b>10,90€</b>", action:'suggest' };
+  }
+  if(any(msg, ['frais ','leger','pas trop lourd','pas trop gras'])){
+    return { item:get('snow'), text:"Le <b>Snow Burger</b> ❄️ — poulet pané croustillant, plus léger qu'un steak. <b>10,90€</b>", action:'suggest' };
+  }
+  // VIANDE / TYPE
+  if(any(msg, ['steak','boeuf','beef','viande','smash beef','de la viande','un peu de viande'])){
+    return { text:"On a plusieurs smash burgers au bœuf 🥩 :<br>• <b>Original</b> — 10€<br>• <b>Addict</b> 🔥 — 9,90€ (signature)<br>• <b>Goat</b> 🐐 — 10,90€<br>• <b>Bigsmash</b> 💪 — 11,40€<br><br>Lequel vous tente ?", choices:[
+      {label:'🔥 Addict', value:'Addict Burger'},
+      {label:'🍔 Original', value:'Original Burger'},
+      {label:'🐐 Goat', value:'Goat Burger'},
+      {label:'💪 Bigsmash', value:'Bigsmash Burger'}
+    ] };
+  }
+  if(any(msg, ['poulet','chicken','pane','filet','volaille'])){
+    return { text:"On a 2 burgers au poulet 🍗 :<br>• <b>Snow</b> ❄️ — crispy oignons + bacon, sauce smoked<br>• <b>Chicken Smoked</b> — fromage + sauce chicken<br>Les 2 à <b>10,90€</b>", choices:[
+      {label:'❄️ Snow', value:'Snow Burger'},
+      {label:'🍗 Chicken Smoked', value:'Chicken Smoked Burger'}
+    ] };
+  }
+  if(any(msg, ['fromage','cheese','cheddar','mozza'])){
+    return { text:"Tous nos burgers ont du fromage 🧀 ! Les plus fromagés :<br>• <b>Goat</b> — provolone + cheddar<br>• <b>Snow</b> — cheddar + bacon<br>• <b>Original</b> — cheese classique", choices:[
+      {label:'🐐 Goat', value:'Goat Burger'},
+      {label:'❄️ Snow', value:'Snow Burger'},
+      {label:'🍔 Original', value:'Original Burger'}
+    ] };
+  }
+  // BURGER GÉNÉRIQUE
+  if(any(msg, [' burger ','un burger','le burger','quel burger','sandwich']) && !findItem(rawMsg)){
+    return { text:"Pour un burger, je vous propose nos top 3 :", choices:[
+      {label:'🔥 Addict — 9,90€', value:'Addict Burger'},
+      {label:'❄️ Snow — 10,90€', value:'Snow Burger'},
+      {label:'🍔 Original — 10€', value:'Original Burger'}
+    ] };
+  }
+  // BOISSONS
+  if(any(msg, [' boire','soif','boisson','drink','quoi boire']) && !any(msg,['avec'])){
+    return { text:"🥤 Au choix :", choices:[
+      {label:'Coca 2,50€', value:'Coca'},
+      {label:'Eau 1,50€', value:'Eau'},
+      {label:'Mojito 6,90€', value:'Citronnade Mojito'},
+      {label:'Milkshake 5,90€', value:'Milkshake'}
+    ] };
+  }
+  if(any(msg, ['rafraichi','citron','menthe','frais a boire'])){
+    return { item:get('mojito'), text:"La <b>Citronnade Mojito</b> 🌿 — fraîcheur garantie, citron-menthe maison. <b>6,90€</b>", action:'suggest' };
+  }
+  // DESSERTS
+  if(any(msg, ['dessert','fin de repas','gourmand','sucrerie','sucre ','quelque chose de sucre'])){
+    return { text:"🍰 Nos desserts :", choices:[
+      {label:'Tiramisu 5,90€', value:'Tiramisu'},
+      {label:'Croffle 5,90€', value:'Croffle'},
+      {label:'Creamy Croffle 6,90€', value:'Creamy Croffle'},
+      {label:'Sundae 4,90€', value:'Sundae'}
+    ] };
+  }
+  // ACCOMPAGNEMENTS
+  if(any(msg, ['accompagn','a cote','en plus','snack'])){
+    return { text:"🍟 Nos accompagnements :", choices:[
+      {label:'Frites 3,90€', value:'Frites'},
+      {label:'Tenders 5,90€', value:'Tenders'},
+      {label:'Wings 5,90€', value:'Wings'},
+      {label:'Nuggets 5,50€', value:'Nuggets'}
+    ] };
+  }
+  // INDÉCISION
+  if(any(msg, ['sais pas','aucune idee','sais po','j hesite','hesit','je ne sais','euh '])){
+    return { text:"Pas de souci ! 🤔 Vous préférez :", choices:[
+      {label:'🥩 Bœuf', value:'bœuf'},
+      {label:'🍗 Poulet', value:'poulet'},
+      {label:'🐐 Plus original', value:'spécial'}
+    ] };
+  }
+  // HALAL VRAIMENT
+  if(any(msg, ['vraiment halal','sur que','sure que','c est vrai','vraiment certif'])){
+    return { text:"✅ Oui <b>100% halal certifié</b>. Toute notre viande est tracée et halal. C'est un engagement Burger Addict 🤝", action:'info' };
+  }
+  return null;
+}
+
+/* ============ ROUTEUR PRINCIPAL ============ */
+function processMessage(rawMsg){
+  const msg = normalize(rawMsg);
+  if(!msg.trim()) return;
+
+  if(chatState.step !== 'idle') return handleOrderFlow(rawMsg, msg);
+
+  // Salutations
+  if(any(msg, ['bonjour','salut ','hello','coucou','bonsoir','assalam','salam','aleykoum','aleikoum',' yo ',' hi '])){
+    return botReply("Salam aleykoum 👋\nBienvenue chez <b>Burger Addict</b> !\n\nJe peux vous aider à :\n🛒 Passer commande\n📋 Voir le menu\n💰 Connaître les prix\n📍 Trouver un restaurant", true);
+  }
+  // Halal
+  if(any(msg, ['halal','certif','achahada','muslim','musulman','porc','licite']) && !any(msg, ['vraiment','sur que'])){
+    return botReply("✅ <b>Oui, 100% halal certifié.</b><br>Toute notre viande est halal — bœuf et poulet certifiés Achahada 🤝", true);
+  }
+  // Menu
+  if(any(msg, ['menu ','la carte','la liste','specialite','vos plat','vos burger','que vendez','tout ce que'])){
+    return botReply(buildMenuHTML(), true, 1100);
+  }
+  // Horaires
+  if(any(msg, ['horaire','ouvert','ferme','heure','quand','tard','minuit','matin'])){
+    return botReply("🕒 Nous sommes ouverts <b>7j/7 de 11h à 02h du matin</b>.<br><br>Vous pouvez commander à tout moment 🛒", true);
+  }
+  // Adresses
+  if(any(msg, ['adresse','ou se trouve','localisation','restaurant','ou aller',' pres ',' près ','metro','parking'])){
+    return botReply("📍 Plus de 20 restaurants en France ! Pour trouver le plus proche, dites-moi votre ville.<br><br>Principaux : Créteil, Cergy, Sarcelles, Lyon, Villeurbanne, Mâcon, Montpellier, La Roche-sur-Yon...", true);
+  }
+  // Livraison
+  if(any(msg, ['livraison','livrer','uber','deliveroo','just eat','domicile'])){
+    return botReply("🛵 Livraison via :<br>✅ Uber Eats<br>✅ Deliveroo<br>✅ Just Eat<br><br>Ou commandez ici en mode <b>À emporter</b> 🤝", true);
+  }
+  // Prix
+  if(any(msg, ['prix ','combien','coute','tarif','c est cher'])){
+    return botReply("💰 <b>NOS PRIX</b><br><br>🍔 Burgers : 8,90€ → 11,40€<br>🎁 Menus : 7,90€ → 16,50€<br>🍟 Accomp. : 3,90€ → 6,90€<br>🥤 Boissons : 1,50€ → 6,90€<br><br>Tapez \"menu\" pour la carte complète", true);
+  }
+  // Allergènes / végé
+  if(any(msg, ['allerg','gluten','lactose','intoler'])){
+    return botReply("⚠️ La majorité de nos produits contiennent gluten et lactose. Pour une allergie sévère, appelez-nous avant la commande, on s'adapte 🤝", true);
+  }
+  if(any(msg, [' vege ',' vegan','vegetarien','sans viande'])){
+    return botReply("🌱 Sur demande : alternative <b>steak végétal</b> sur l'Addict et l'Original Burger ✨", true);
+  }
+  // Recommandation
+  if(any(msg, ['recommand','conseil','meilleur','populair','le top','quoi prendre'])){
+    return botReply("⭐ <b>BEST-SELLERS</b><br><br>1️⃣ <b>Addict</b> ❤️ — signature<br>2️⃣ <b>Snow</b> 🥓 — crispy<br>3️⃣ <b>Bigsmash</b> 💪 — grosse faim<br>4️⃣ <b>Goat</b> 🐐 — provolone", true, 900, [
+      {label:'🔥 Addict', value:'Addict Burger'},
+      {label:'❄️ Snow', value:'Snow Burger'},
+      {label:'💪 Bigsmash', value:'Bigsmash Burger'},
+      {label:'🐐 Goat', value:'Goat Burger'}
+    ]);
+  }
+  // Remerciements / au revoir
+  if(any(msg, ['merci','thanks','baraka','choukran'])){
+    return botReply("Avec plaisir ! 🤝 Bon appétit chez Burger Addict ! 🍔");
+  }
+  if(any(msg, ['au revoir','bye','a bientot'])){
+    return botReply("À bientôt chez Burger Addict ! 👋");
+  }
+  if(any(msg, ['humain','quelqu un','reclamation','probleme','manager'])){
+    return botReply("📞 Je vous mets en relation avec l'équipe. Donnez-moi votre ville pour le numéro direct 🤝");
+  }
+
+  // Réponses oui/non/ouep — quand bot a posé une question
+  if(/^(oui|yes|ouep|ok|d ?accord|go|c est bon|valide|confirme|👍)\s*$/.test(msg.trim())){
+    return startOrder();
+  }
+  if(/^(non|no|nope|pas maintenant|annule|stop|👎)\s*$/.test(msg.trim())){
+    return botReply("Pas de souci ! Que puis-je faire d'autre pour vous ? 🤝");
+  }
+
+  // === BOISSONS ALTERNATIVES (Oasis, Sprite, Bière...) ===
+  const altDrink = handleAlternativeDrinks(msg);
+  if(altDrink) return botReply(altDrink, true);
+
+  // === QUESTIONS SUR LES PLATS ===
+  const dishAnswer = answerAboutDish(rawMsg, msg);
+  if(dishAnswer) return botReply(dishAnswer, true);
+
+  // === INTENTIONS HUMAINES (pour 2, pour enfant, copieux, rapide...) ===
+  const human = handleHumanIntent(msg);
+  if(human){
+    if(human.action === 'suggest' && human.item){
+      chatState.order = { items:[], pendingItem:human.item, mode:null, name:null };
+      chatState.step = 'order_format_proposal';
+      return botReply(human.text, true, 800, [
+        {label:'✅ Oui', value:'oui'},
+        {label:'❌ Non', value:'non'}
+      ]);
+    }
+    if(human.choices) return botReply(human.text, true, 800, human.choices);
+    return botReply(human.text, true);
+  }
+
+  // === PARSING COMPLET (burger + boisson + side dans une seule phrase) ===
+  const parsed = parseFullOrder(rawMsg);
+  if(parsed.burger && (parsed.drink || parsed.side || parsed.hasMenu)){
+    return handleFullOrder(parsed);
+  }
+  // Plusieurs items sans burger principal : ex "tenders et un coca"
+  if(!parsed.burger && parsed.drink && parsed.side){
+    chatState.order = { items:[{...parsed.side}, {...parsed.drink}], pendingItem:null, mode:null, name:null };
+    chatState.step = 'order_mode';
+    let total = parsed.side.price + parsed.drink.price;
+    return botReply("✅ J'ai noté :<br>• "+parsed.side.name+" — "+parsed.side.price.toFixed(2)+"€<br>• "+parsed.drink.name+" — "+parsed.drink.price.toFixed(2)+"€<br><br><b>Total : "+total.toFixed(2)+"€</b><br><br>📍 Sur place ou à emporter ?", true, 800, [
+      {label:'🍽️ Sur place', value:'sur place'},
+      {label:'🥡 À emporter', value:'à emporter'}
+    ]);
+  }
+
+  // === DÉTECTION DIRECTE D'UN PLAT ===
+  const item = findItem(rawMsg);
+  if(item){
+    if(item.cat === 'signature' || item.cat === 'classique'){
+      const qty = parsed.quantity || 1;
+      const displayName = qty > 1 ? qty+'× '+item.name : item.name;
+      const totalPrice = item.price * qty;
+      // Si "seul" mentionné → directement seul
+      if(parsed.hasSeul){
+        chatState.order = { items:[{...item, name:displayName, price:totalPrice}], pendingItem:null, qty:1, mode:null, name:null };
+        chatState.step = 'order_mode';
+        return botReply("✅ <b>"+displayName+"</b> seul — "+totalPrice.toFixed(2)+"€", true, 700, [
+          {label:'🍽️ Sur place', value:'sur place'},
+          {label:'🥡 À emporter', value:'à emporter'}
+        ]);
+      }
+      chatState.order = { items:[], pendingItem:item, qty:qty, mode:null, name:null };
+      chatState.step = 'order_format';
+      const intro = qty > 1
+        ? "C'est noté ! 🔥 <b>"+qty+"× "+item.name+"</b> ("+totalPrice.toFixed(2)+"€)<br><br>Vous les prenez :"
+        : "Excellent choix ! 🔥 <b>"+item.name+"</b><br><br>"+item.desc+"<br><br>Vous le prenez :";
+      return botReply(intro, true, 900, [
+        {label:'🥤 En menu', value:'en menu'},
+        {label:'🍔 Seul', value:'seul'}
+      ]);
+    } else {
+      // Si plusieurs quantités
+      const qty = parsed.quantity || 1;
+      const itemMulti = qty > 1 ? { ...item, name:qty+'× '+item.name, price:item.price*qty } : {...item};
+      chatState.order = { items:[itemMulti], pendingItem:null, mode:null, name:null };
+      chatState.step = 'order_mode';
+      return botReply("✅ <b>"+itemMulti.name+"</b> ("+itemMulti.price.toFixed(2)+"€)", true, 800, [
+        {label:'🍽️ Sur place', value:'sur place'},
+        {label:'🥡 À emporter', value:'à emporter'}
+      ]);
+    }
+  }
+
+  // === INTELLIGENCE FAST-FOOD (suggestions) ===
+  const sugg = getSmartSuggestion(rawMsg, msg);
+  if(sugg){
+    if(sugg.action === 'suggest' && sugg.item){
+      // Pré-stocker l'item et proposer de commander
+      chatState.order = { items:[], pendingItem:sugg.item, mode:null, name:null };
+      chatState.step = 'order_format_proposal';
+      return botReply(sugg.text, true, 900, [
+        {label:'✅ Oui je le prends', value:'oui'},
+        {label:'❌ Non merci', value:'non'}
+      ]);
+    }
+    if(sugg.choices){
+      return botReply(sugg.text, true, 900, sugg.choices);
+    }
+    if(sugg.text){
+      return botReply(sugg.text, true);
+    }
+  }
+
+  // Commander (sans plat précisé)
+  if(any(msg, ['command','je veux','je voudrais','aimerais','souhaite','order','j ai faim','passer','prendre','manger'])){
+    return startOrder();
+  }
+
+  // === FALLBACK INTELLIGENT ===
+  return botReply("Hmm, je ne suis pas sûr de comprendre 🤔<br><br>Pour vous aider, je peux vous proposer :<br>🍔 <b>Burgers</b> : Addict, Snow, Goat, Original...<br>🎁 <b>Menus</b> : Smash Addict, Classique, Duo...<br>🍗 <b>Accompagnements</b> : Tenders, Wings, Frites<br>🍰 <b>Desserts</b> : Tiramisu, Croffle, Sundae<br><br>Tapez le nom d'un plat, \"menu\" pour la carte, ou décrivez ce qui vous tente !", true, 1000, [
+    {label:'📋 Voir le menu', value:'le menu'},
+    {label:'🛒 Commander', value:'commander'},
+    {label:'⭐ Recommandez-moi', value:'recommande moi'}
+  ]);
+}
+
+function startOrder(){
+  chatState.step = 'order_burger';
+  chatState.order = { items:[], pendingItem:null, mode:null, name:null };
+  return botReply("Avec plaisir ! 🛒<br>Que souhaitez-vous commander ?<br><br>Vous pouvez écrire ce que vous voulez, par exemple :<br>• \"Un Addict en menu\"<br>• \"Snow Burger seul\"<br>• \"Tenders et un Coca\"", true, 800, [
+    {label:'🔥 Addict', value:'Addict Burger'},
+    {label:'❄️ Snow', value:'Snow Burger'},
+    {label:'🐐 Goat', value:'Goat Burger'},
+    {label:'💪 Bigsmash', value:'Bigsmash Burger'},
+    {label:'📋 Voir le menu', value:'le menu'}
+  ]);
+}
+
+/* ============ COMMANDE COMPLÈTE EN UNE PHRASE ============ */
+function handleFullOrder(parsed){
+  const burger = parsed.burger;
+  const qty = parsed.quantity || 1;
+  let menuPriceUnit = burger.cat === 'signature' ? 13.90 : 10.50;
+  if(parsed.drink && parsed.drink.id === 'milkshake') menuPriceUnit += 1;
+  if(parsed.drink && parsed.drink.id === 'mojito') menuPriceUnit += 2;
+
+  // CAS 1 : burger + boisson + side → menu complet
+  if(parsed.drink && parsed.side){
+    const sideLabel = parsed.hasPotatoes ? 'Potatoes' : parsed.side.name;
+    const totalPrice = menuPriceUnit * qty;
+    chatState.order = { items:[{
+      id:'menu-'+burger.id,
+      name:(qty>1?qty+'× ':'')+'Menu '+burger.name+' ('+sideLabel+' + '+parsed.drink.name+')',
+      price:totalPrice,
+      cat:'menu'
+    }], pendingItem:null, mode:null, name:null };
+    chatState.step = 'order_mode';
+    return botReply("✅ Parfait ! "+(qty>1?qty+'× ':'')+"<b>Menu "+burger.name+"</b> + "+sideLabel+" + "+parsed.drink.name+" — <b>"+totalPrice.toFixed(2)+"€</b><br><br>📍 Sur place ou à emporter ?", true, 800, [
+      {label:'🍽️ Sur place', value:'sur place'},
+      {label:'🥡 À emporter', value:'à emporter'}
+    ]);
+  }
+
+  // CAS 2 : burger + boisson sans side → demander frites/potatoes
+  if(parsed.drink && !parsed.side){
+    chatState.order = { items:[], pendingItem:burger, pendingDrink:parsed.drink, quantity:qty, mode:null, name:null };
+    chatState.step = 'order_add_fries';
+    return botReply("Excellent choix ! 🔥 "+(qty>1?qty+'× ':'')+"<b>Menu "+burger.name+"</b> + "+parsed.drink.name+" ✅<br>🍟 J'ajoute des frites en accompagnement ?", true, 800, [
+      {label:'✅ Oui frites', value:'oui frites'},
+      {label:'🥔 Plutôt potatoes', value:'potatoes'},
+      {label:'❌ Non merci', value:'non merci'}
+    ]);
+  }
+
+  // CAS 3 : burger + side sans boisson → suggérer menu complet (proposer boisson)
+  if(parsed.side && !parsed.drink){
+    chatState.order = { items:[], pendingItem:burger, pendingSide:parsed.side, qty:qty, mode:null, name:null };
+    chatState.step = 'order_drink';
+    return botReply("Top ! "+(qty>1?qty+'× ':'')+"<b>"+burger.name+"</b> avec "+parsed.side.name+" 🍟<br>Et la boisson ?", true, 800, [
+      {label:'Coca 2,50€', value:'Coca'},
+      {label:'Eau 1,50€', value:'Eau'},
+      {label:'Mojito +2€', value:'Mojito'},
+      {label:'Milkshake +1€', value:'Milkshake'}
+    ]);
+  }
+
+  // CAS 4 : burger + "menu" mot-clé seul → flow normal demander boisson
+  if(parsed.hasMenu && !parsed.drink && !parsed.side){
+    chatState.order = { items:[], pendingItem:burger, qty:qty, mode:null, name:null };
+    chatState.step = 'order_drink';
+    return botReply("✅ "+(qty>1?qty+'× ':'')+"<b>Menu "+burger.name+"</b> (+frites + boisson) ! Quelle boisson ?", true, 700, [
+      {label:'Coca 2,50€', value:'Coca'},
+      {label:'Eau 1,50€', value:'Eau'},
+      {label:'Mojito +2€', value:'Mojito'},
+      {label:'Milkshake +1€', value:'Milkshake'}
+    ]);
+  }
+  // Fallback (ne devrait pas arriver)
+  chatState.order = { items:[], pendingItem:burger, mode:null, name:null };
+  chatState.step = 'order_format';
+  return botReply("Excellent choix ! 🔥 <b>"+burger.name+"</b>", true, 700, [
+    {label:'🥤 En menu', value:'en menu'},
+    {label:'🍔 Seul', value:'seul'}
+  ]);
+}
+
+/* ============ FLOW COMMANDE ============ */
+function handleOrderFlow(rawMsg, msg){
+  if(any(msg, ['annul ','stop ','retour','quitter']) && chatState.step !== 'order_confirm'){
+    chatState.step = 'idle';
+    return botReply("❌ Commande annulée. Que puis-je faire d'autre ?");
+  }
+
+  // ÉTAPE Q+0 : ajouter frites au menu (depuis parsing complet)
+  if(chatState.step === 'order_add_fries'){
+    const it = chatState.order.pendingItem;
+    const drink = chatState.order.pendingDrink;
+    const qty = chatState.order.quantity || 1;
+    let menuPrice = it.cat === 'signature' ? 13.90 : 10.50;
+    if(drink && drink.id === 'milkshake') menuPrice += 1;
+    if(drink && drink.id === 'mojito') menuPrice += 2;
+    let sideLabel = 'Frites';
+    let menuTotal = menuPrice * qty;
+
+    if(any(msg, ['oui','frite','fries','d accord','ok','yes','volontiers','avec'])){
+      sideLabel = 'Frites';
+    } else if(any(msg, ['potato','patate','plutot pot'])){
+      sideLabel = 'Potatoes';
+    } else if(any(msg, ['non','sans','pas de frite','rien','c est bon'])){
+      // Sans frites → juste burger + boisson séparément (pas de prix menu)
+      const burgerPrice = it.price * qty;
+      chatState.order.items.push({ id:it.id, name:(qty>1?qty+'× ':'')+it.name+' (sans menu)', price:burgerPrice, cat:'classique' });
+      chatState.order.items.push({...drink});
+      chatState.order.pendingItem = null;
+      chatState.order.pendingDrink = null;
+      chatState.step = 'order_mode';
+      return botReply("✅ Sans accompagnement, c'est noté !<br>"+(qty>1?qty+'× ':'')+it.name+" + "+drink.name+" — <b>"+(burgerPrice + drink.price).toFixed(2)+"€</b>", true, 700, [
+        {label:'🍽️ Sur place', value:'sur place'},
+        {label:'🥡 À emporter', value:'à emporter'}
+      ]);
+    } else {
+      return botReply("Tapez ou cliquez :", true, 500, [
+        {label:'✅ Oui frites', value:'oui frites'},
+        {label:'🥔 Plutôt potatoes', value:'potatoes'},
+        {label:'❌ Non merci', value:'non merci'}
+      ]);
+    }
+    chatState.order.items.push({
+      id:'menu-'+it.id,
+      name:(qty>1?qty+'× ':'')+'Menu '+it.name+' ('+sideLabel+' + '+drink.name+')',
+      price:menuTotal,
+      cat:'menu'
+    });
+    chatState.order.pendingItem = null;
+    chatState.order.pendingDrink = null;
+    chatState.step = 'order_mode';
+    return botReply("✅ Parfait ! Menu "+it.name+" + "+sideLabel+" + "+drink.name+" — <b>"+menuTotal.toFixed(2)+"€</b>", true, 700, [
+      {label:'🍽️ Sur place', value:'sur place'},
+      {label:'🥡 À emporter', value:'à emporter'}
+    ]);
+  }
+
+  // Pendant suggestion (proposition)
+  if(chatState.step === 'order_format_proposal'){
+    if(/^(oui|yes|ouep|ok|d ?accord|go|c est bon|valide|confirme|👍|je le prends|je prends)/.test(msg.trim())){
+      const it = chatState.order.pendingItem;
+      chatState.step = 'order_format';
+      return botReply("Top ! 🔥 Vous prenez le <b>"+it.name+"</b> :", true, 700, [
+        {label:'🥤 En menu', value:'en menu'},
+        {label:'🍔 Seul', value:'seul'}
+      ]);
+    }
+    if(/^(non|no|nope|pas maintenant|annule|stop|👎|merci)/.test(msg.trim())){
+      chatState.step = 'idle';
+      chatState.order = { items:[], pendingItem:null, mode:null, name:null };
+      return botReply("Pas de souci ! Que voulez-vous d'autre ? Tapez \"menu\" ou décrivez ce qui vous tente 🤝");
+    }
+    // L'user a peut-être tapé autre chose → traiter normalement
+    chatState.step = 'idle';
+    return processMessage(rawMsg);
+  }
+
+  // ÉTAPE 1 : Choix du plat (après "commander")
+  if(chatState.step === 'order_burger'){
+    if(any(msg, ['menu ','la carte','la liste'])){
+      return botReply(buildMenuHTML(), true, 1000);
+    }
+    const item = findItem(rawMsg);
+    if(!item){
+      // Tester suggestion
+      const sugg = getSmartSuggestion(rawMsg, msg);
+      if(sugg){
+        if(sugg.action === 'suggest' && sugg.item){
+          chatState.order.pendingItem = sugg.item;
+          chatState.step = 'order_format_proposal';
+          return botReply(sugg.text, true, 800, [
+            {label:'✅ Oui', value:'oui'},
+            {label:'❌ Non', value:'non'}
+          ]);
+        }
+        if(sugg.choices){ return botReply(sugg.text, true, 800, sugg.choices); }
+      }
+      return botReply("Hmm, je n'ai pas reconnu ce plat 🤔<br>Essayez : <b>Addict</b>, <b>Snow</b>, <b>Goat</b>, <b>Bigsmash</b>, <b>Original</b>, ou décrivez (épicé, gros, classique...).", true);
+    }
+    // Burger → demander format
+    if(item.cat === 'signature' || item.cat === 'classique'){
+      if(any(msg, [' seul ','tout seul',' juste ','sans menu','sans frite'])){
+        chatState.order.items.push({...item});
+        chatState.step = 'order_mode';
+        return botReply("✅ <b>"+item.name+"</b> seul — "+item.price.toFixed(2)+"€", true, 700, [
+          {label:'🍽️ Sur place', value:'sur place'},
+          {label:'🥡 À emporter', value:'à emporter'}
+        ]);
+      }
+      if(msg.includes('menu') || msg.includes('formule')){
+        chatState.order.pendingItem = item;
+        chatState.step = 'order_drink';
+        return botReply("✅ <b>"+item.name+"</b> en menu (+frites + boisson)<br>Quelle boisson ?", true, 700, [
+          {label:'Coca 2,50€', value:'Coca'},
+          {label:'Eau 1,50€', value:'Eau'},
+          {label:'Mojito +2€', value:'Mojito'},
+          {label:'Milkshake +1€', value:'Milkshake'}
+        ]);
+      }
+      chatState.order.pendingItem = item;
+      chatState.step = 'order_format';
+      return botReply("Excellent choix ! 🔥 <b>"+item.name+"</b><br>Vous le prenez :", true, 700, [
+        {label:'🥤 En menu', value:'en menu'},
+        {label:'🍔 Seul', value:'seul'}
+      ]);
+    }
+    if(item.cat === 'menu'){
+      chatState.order.items.push({...item});
+      chatState.step = 'order_mode';
+      return botReply("✅ <b>"+item.name+"</b> — "+item.price.toFixed(2)+"€", true, 700, [
+        {label:'🍽️ Sur place', value:'sur place'},
+        {label:'🥡 À emporter', value:'à emporter'}
+      ]);
+    }
+    chatState.order.items.push({...item});
+    chatState.step = 'order_mode';
+    return botReply("✅ <b>"+item.name+"</b> ajouté — "+item.price.toFixed(2)+"€", true, 700, [
+      {label:'🍽️ Sur place', value:'sur place'},
+      {label:'🥡 À emporter', value:'à emporter'}
+    ]);
+  }
+
+  // ÉTAPE 2 : Format menu/seul
+  if(chatState.step === 'order_format'){
+    const it = chatState.order.pendingItem;
+    if(any(msg, [' menu','formule','frite','boisson','en menu'])){
+      chatState.step = 'order_drink';
+      return botReply("🍟 En menu, c'est noté ! Quelle boisson ?", true, 700, [
+        {label:'Coca 2,50€', value:'Coca'},
+        {label:'Eau 1,50€', value:'Eau'},
+        {label:'Mojito +2€', value:'Mojito'},
+        {label:'Milkshake +1€', value:'Milkshake'}
+      ]);
+    }
+    if(any(msg, [' seul','tout seul',' juste','sans menu','sans frite','sans accompagnement'])){
+      const qty = chatState.order.qty || 1;
+      const displayName = qty > 1 ? qty+'× '+it.name : it.name;
+      const totalPrice = it.price * qty;
+      chatState.order.items.push({...it, name:displayName, price:totalPrice});
+      chatState.order.pendingItem = null;
+      chatState.order.qty = 1;
+      chatState.step = 'order_mode';
+      return botReply("✅ <b>"+displayName+"</b> seul — "+totalPrice.toFixed(2)+"€", true, 700, [
+        {label:'🍽️ Sur place', value:'sur place'},
+        {label:'🥡 À emporter', value:'à emporter'}
+      ]);
+    }
+    return botReply("Tapez ou cliquez :", true, 500, [
+      {label:'🥤 En menu', value:'en menu'},
+      {label:'🍔 Seul', value:'seul'}
+    ]);
+  }
+
+  // ÉTAPE 3 : Boisson (si menu)
+  if(chatState.step === 'order_drink'){
+    const it = chatState.order.pendingItem;
+    let drinkName = null, drinkExtra = 0;
+    if(msg.includes('coca') || msg.includes('cola')) drinkName = 'Coca-Cola';
+    else if(msg.includes('eau') || msg.includes('water')) drinkName = 'Eau';
+    else if(msg.includes('mojito') || msg.includes('citron')) { drinkName = 'Citronnade Mojito'; drinkExtra = 2; }
+    else if(msg.includes('shake') || msg.includes('milk')) { drinkName = 'Milkshake'; drinkExtra = 1; }
+    if(!drinkName){
+      const altReply = handleAlternativeDrinks(msg);
+      if(altReply){
+        return botReply(altReply, true, 700, [
+          {label:'Coca 2,50€', value:'Coca'},
+          {label:'Eau 1,50€', value:'Eau'},
+          {label:'Mojito +2€', value:'Mojito'},
+          {label:'Milkshake +1€', value:'Milkshake'}
+        ]);
+      }
+      return botReply("Je n'ai pas reconnu cette boisson 🤔<br>On a : <b>Coca</b>, <b>Eau</b>, <b>Mojito</b> ou <b>Milkshake</b>.", true, 700, [
+        {label:'Coca 2,50€', value:'Coca'},
+        {label:'Eau 1,50€', value:'Eau'},
+        {label:'Mojito +2€', value:'Mojito'},
+        {label:'Milkshake +1€', value:'Milkshake'}
+      ]);
+    }
+    const qty = chatState.order.qty || 1;
+    let menuUnit = it.cat === 'signature' ? 13.90 : 10.50;
+    menuUnit += drinkExtra;
+    const menuTotal = menuUnit * qty;
+    chatState.order.items.push({
+      id:'menu-'+it.id,
+      name:(qty>1?qty+'× ':'')+'Menu '+it.name+' ('+drinkName+')',
+      price:menuTotal,
+      cat:'menu'
+    });
+    chatState.order.pendingItem = null;
+    chatState.order.qty = 1;
+    chatState.step = 'order_mode';
+    return botReply("✅ "+(qty>1?qty+'× ':'')+"Menu <b>"+it.name+"</b> + frites + "+drinkName+" — <b>"+menuTotal.toFixed(2)+"€</b>", true, 700, [
+      {label:'🍽️ Sur place', value:'sur place'},
+      {label:'🥡 À emporter', value:'à emporter'}
+    ]);
+  }
+
+  // ÉTAPE 4 : Mode service
+  if(chatState.step === 'order_mode'){
+    let mode = null;
+    if(msg.includes('place') || msg.includes(' ici ') || msg.includes('rester') || msg.includes('a table')) mode = 'Sur place';
+    else if(msg.includes('emport') || msg.includes('take') || msg.includes('a la maison') || msg.includes('chez moi')) mode = 'À emporter';
+    else if(msg.includes('livr') || msg.includes('domicile')){
+      return botReply("Désolé, on ne fait pas la livraison directement ici 🥡<br>Mais à emporter c'est possible ! Ou via Uber Eats / Deliveroo / Just Eat.", true, 800, [
+        {label:'🥡 À emporter', value:'à emporter'},
+        {label:'🍽️ Sur place', value:'sur place'}
+      ]);
+    }
+    if(!mode){
+      return botReply("Cliquez ou tapez :", true, 500, [
+        {label:'🍽️ Sur place', value:'sur place'},
+        {label:'🥡 À emporter', value:'à emporter'}
+      ]);
+    }
+    chatState.order.mode = mode;
+    chatState.step = 'order_extras';
+    return botReply("Parfait, <b>"+mode+"</b> ! ✅<br>Voulez-vous ajouter quelque chose ?", true, 800, [
+      {label:'🍟 Frites', value:'Frites'},
+      {label:'🥤 Boisson', value:'boisson'},
+      {label:'🍰 Dessert', value:'dessert'},
+      {label:'✅ Non c\'est tout', value:'non c\'est tout'}
+    ]);
+  }
+
+  // ÉTAPE 5 : Extras
+  if(chatState.step === 'order_extras'){
+    if(any(msg, ['non ','rien','c est bon','c est tout','passer','suivant','suffit','ca ira','ça ira','rien d autre',' tout '])){
+      chatState.step = 'order_name';
+      return botReply("👤 Très bien ! Un petit nom pour la commande ? (votre prénom)", true, 700);
+    }
+    // Sous-catégories
+    if(msg.includes('boisson') && !findItem(rawMsg, ['drink'])){
+      return botReply("🥤 Quelle boisson ?", true, 500, [
+        {label:'Coca 2,50€', value:'Coca'},
+        {label:'Eau 1,50€', value:'Eau'},
+        {label:'Mojito 6,90€', value:'Mojito'},
+        {label:'Milkshake 5,90€', value:'Milkshake'}
+      ]);
+    }
+    if(msg.includes('dessert') && !findItem(rawMsg, ['dessert'])){
+      return botReply("🍰 Quel dessert ?", true, 500, [
+        {label:'Tiramisu 5,90€', value:'Tiramisu'},
+        {label:'Croffle 5,90€', value:'Croffle'},
+        {label:'Creamy Croffle 6,90€', value:'Creamy Croffle'},
+        {label:'Sundae 4,90€', value:'Sundae'}
+      ]);
+    }
+    const item = findItem(rawMsg, ['side','dessert','drink','classique','signature','menu']);
+    if(!item){
+      // Vérifier si c'est une boisson qu'on n'a pas (Oasis, Sprite, Bière...)
+      const altReply = handleAlternativeDrinks(msg);
+      if(altReply){
+        return botReply(altReply, true);
+      }
+      return botReply("Je n'ai pas reconnu cet article 🤔<br>Tapez le nom d'un plat (Tenders, Frites, Coca, Tiramisu...) ou \"<b>non</b>\" pour finaliser.", true);
+    }
+    chatState.order.items.push({...item});
+    return botReply("✅ <b>"+item.name+"</b> ajouté ("+item.price.toFixed(2)+"€)<br>Autre chose ?", true, 700, [
+      {label:'🍟 Frites', value:'Frites'},
+      {label:'🥤 Boisson', value:'boisson'},
+      {label:'🍰 Dessert', value:'dessert'},
+      {label:'✅ Non c\'est tout', value:'non c\'est tout'}
+    ]);
+  }
+
+  // ÉTAPE 6 : Nom
+  if(chatState.step === 'order_name'){
+    const name = rawMsg.trim().split(' ')[0].slice(0,20);
+    if(name.length < 2){
+      return botReply("Je n'ai pas compris 🤔 Quel est votre prénom ?");
+    }
+    chatState.order.name = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    return showOrderRecap();
+  }
+
+  // ÉTAPE 7 : Confirmation
+  if(chatState.step === 'order_confirm'){
+    if(/^(oui|yes|ouep|ok|d ?accord|go|c est bon|valide|confirme|👍)/.test(msg.trim())){
+      const num = Math.floor(100 + Math.random()*900);
+      const orderData = {
+        items:[...chatState.order.items],
+        mode:chatState.order.mode,
+        name:chatState.order.name,
+        timestamp:Date.now()
+      };
+      orderHistory[num] = orderData;
+      addPendingBanner(num, orderData);
+      chatState.step = 'idle';
+      chatState.order = { items:[], pendingItem:null, mode:null, name:null };
+      return botReply("🤝 Parfait, c'est noté !<br>Votre commande est en cours d'envoi au restaurant...", true, 600);
+    }
+    if(/^(non|no|nope|modif|chang|annul|recommenc|👎)/.test(msg.trim())){
+      chatState.step = 'idle';
+      chatState.order = { items:[], pendingItem:null, mode:null, name:null };
+      return botReply("Pas de souci ! Tapez \"commander\" pour repartir de zéro 🤝");
+    }
+    return botReply("Confirmez ou modifiez :", true, 500, [
+      {label:'✅ Oui je confirme', value:'oui'},
+      {label:'✏️ Modifier', value:'modifier'}
+    ]);
+  }
+}
+
+function showOrderRecap(){
+  const o = chatState.order;
+  let total = 0;
+  let h = '<div class="order-card"><h4>🧾 Récapitulatif</h4>';
+  o.items.forEach(it=>{
+    total += it.price;
+    h += '<div class="order-line"><span>'+it.name+'</span><span>'+it.price.toFixed(2)+'€</span></div>';
+  });
+  h += '<div class="order-line"><span>📍 '+o.mode+'</span><span></span></div>';
+  h += '<div class="order-line"><span>👤 '+o.name+'</span><span></span></div>';
+  h += '<div class="order-total"><span>TOTAL</span><span>'+total.toFixed(2)+'€</span></div></div>';
+  h += '<br>👉 Confirmez-vous la commande ?';
+  chatState.step = 'order_confirm';
+  return botReply(h, true, 700, [
+    {label:'✅ Oui je confirme', value:'oui'},
+    {label:'✏️ Modifier', value:'modifier'}
+  ]);
+}
+
+/* ============ BANDEAUX COMMANDE ============ */
+function addPendingBanner(orderNum, orderData){
+  const banner = document.createElement('div');
+  banner.className = 'order-banner pending';
+  banner.id = 'banner-'+orderNum;
+  banner.innerHTML = '<div class="banner-row"><span class="pulse-dot"></span><span class="banner-text">🍔 Commande <b>#'+orderNum+'</b> — En attente de confirmation...</span></div>';
+  bannersEl.appendChild(banner);
+  banner._orderNum = orderNum;
+
+  setTimeout(()=> upgradeBanner(banner, orderNum), 3000);
+}
+function upgradeBanner(banner, orderNum){
+  banner.className = 'order-banner accepted';
+  banner.innerHTML = '<div class="banner-row">'
+    + '<span class="banner-icon">🍔</span>'
+    + '<span class="banner-text">Commande <b>#'+orderNum+'</b> — En cours — ~15-20 min</span>'
+    + '<button class="banner-btn" onclick="showReceipt('+orderNum+')">Voir reçu</button>'
+    + '</div>'
+    + '<div class="banner-progress"><div class="banner-progress-fill"></div></div>';
+
+  // Carte stylée
+  setTimeout(()=>{
+    const cardHTML = '<div class="success-card">'
+      + '<div class="check-line">✅ Commande envoyée !</div>'
+      + '<div class="order-num">#'+orderNum+'</div>'
+      + '<div class="delay-info"><b>~15-20 min</b><br>Rendez-vous au comptoir</div>'
+      + '</div>';
+    botReply(cardHTML, true, 600);
+    setTimeout(()=>{
+      botReply("Autre chose ? Vous pouvez continuer à commander ou poser une question 🤝", true, 1000, [
+        {label:'🛒 Nouvelle commande', value:'commander'},
+        {label:'📋 Le menu', value:'le menu'},
+        {label:'🧾 Voir reçu', value:'voir recu '+orderNum}
+      ]);
+    }, 1800);
+  }, 400);
+}
+
+/* ============ MODAL REÇU ============ */
+function generateFakeQR(seed){
+  // QR factice déterministe basé sur le numéro de commande
+  const size = 21;
+  let s = seed * 7919;
+  const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  let svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21" shape-rendering="crispEdges">';
+  svg += '<rect width="21" height="21" fill="#fff"/>';
+  // Random pattern (skip finder zones)
+  for(let y=0; y<21; y++){
+    for(let x=0; x<21; x++){
+      if((x<8 && y<8) || (x>12 && y<8) || (x<8 && y>12)) continue;
+      if(rand() > 0.5) svg += '<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="#000"/>';
+    }
+  }
+  // Finder patterns
+  const drawFinder = (fx, fy) => {
+    svg += '<rect x="'+fx+'" y="'+fy+'" width="7" height="7" fill="#000"/>';
+    svg += '<rect x="'+(fx+1)+'" y="'+(fy+1)+'" width="5" height="5" fill="#fff"/>';
+    svg += '<rect x="'+(fx+2)+'" y="'+(fy+2)+'" width="3" height="3" fill="#000"/>';
+  };
+  drawFinder(0,0); drawFinder(14,0); drawFinder(0,14);
+  svg += '</svg>';
+  return svg;
+}
+
+function showReceipt(num){
+  const data = orderHistory[num];
+  if(!data) return;
+  const date = new Date(data.timestamp);
+  // Date FR : "vendredi 8 mai 2026"
+  const dateStr = date.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  const timeStr = date.getHours().toString().padStart(2,'0')+'h'+date.getMinutes().toString().padStart(2,'0');
+  let total = 0;
+  let itemsHTML = '';
+  data.items.forEach(it=>{
+    total += it.price;
+    // Si le nom commence déjà par "N× ", ne pas re-préfixer ; sinon afficher "1×"
+    const hasQty = /^\d+×\s/.test(it.name);
+    const prefix = hasQty ? '' : '<span style="color:#888">1×</span> ';
+    itemsHTML += '<div class="receipt-line"><span>'+prefix+it.name+'</span><span>'+it.price.toFixed(2)+'€</span></div>';
+  });
+  const html = '<div class="receipt-logo-wrap">'
+    + '<div class="receipt-logo-circle">B</div>'
+    + '<div class="receipt-brand">BURGER ADDICT</div>'
+    + '</div>'
+    + '<div class="receipt-divider-strong"></div>'
+    + '<div class="receipt-num-big">#'+num+'</div>'
+    + '<div class="receipt-date">'+dateStr.charAt(0).toUpperCase()+dateStr.slice(1)+'<br>'+timeStr+'</div>'
+    + '<div class="receipt-divider-strong"></div>'
+    + '<div class="receipt-body">'
+    +   itemsHTML
+    +   '<div class="receipt-divider"></div>'
+    +   '<div class="receipt-total"><span>TOTAL</span><span>'+total.toFixed(2)+'€</span></div>'
+    +   '<div class="receipt-info">📍 Service : <b>'+data.mode+'</b><br>👤 Client : <b>'+(data.name||'—')+'</b></div>'
+    + '</div>'
+    + '<div class="receipt-status">⏱️ Préparation : ~15-20 min<br><span style="font-weight:500;font-size:11.5px">Rendez-vous au comptoir</span></div>'
+    + '<div class="receipt-halal">✅ HALAL CERTIFIÉ ACHAHADA</div>'
+    + '<div class="receipt-qr-wrap">'
+    +   '<div class="receipt-qr">'+generateFakeQR(num)+'</div>'
+    +   '<div class="receipt-qr-label">Présentez ce code au comptoir</div>'
+    + '</div>'
+    + '<div class="receipt-footer">Propulsé par IAbot</div>'
+    + '<div class="receipt-actions">'
+    +   '<button class="receipt-btn close" onclick="closeReceipt()">Fermer</button>'
+    +   '<button class="receipt-btn share" onclick="shareReceipt('+num+')">📤 Partager</button>'
+    +   '<button class="receipt-btn new" onclick="newOrderFromReceipt()">🛒</button>'
+    + '</div>';
+  document.getElementById('receiptContent').innerHTML = html;
+  document.getElementById('receiptModal').classList.add('show');
+}
+
+function shareReceipt(num){
+  const data = orderHistory[num];
+  if(!data) return;
+  let total = 0; data.items.forEach(it=> total+=it.price);
+  const text = '🍔 Burger Addict — Commande #'+num+'\n\n'
+    + data.items.map(it=>'• '+it.name+' — '+it.price.toFixed(2)+'€').join('\n')
+    + '\n\nTotal : '+total.toFixed(2)+'€\n📍 '+data.mode+'\n⏱️ ~15-20 min';
+  if(navigator.share){
+    navigator.share({ title:'Burger Addict — Commande #'+num, text:text }).catch(()=>{});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(text);
+    alert('Reçu copié ! 📋');
+  } else {
+    alert(text);
+  }
+}
+
+function closeReceipt(){ document.getElementById('receiptModal').classList.remove('show'); }
+function newOrderFromReceipt(){ closeReceipt(); startOrder(); }
+
+/* ============ I/O ============ */
+function handleSend(){
+  const txt = inputEl.value.trim();
+  if(!txt) return;
+  appendMessage(txt, 'user');
+  inputEl.value = '';
+  // Cas spécial "voir recu XXX"
+  const m = txt.match(/voir recu (\d+)/i);
+  if(m){ setTimeout(()=> showReceipt(parseInt(m[1])), 200); return; }
+  setTimeout(()=> processMessage(txt), 200);
+}
+function quickSend(txt){ appendMessage(txt, 'user'); setTimeout(()=> processMessage(txt), 200); }
+inputEl.addEventListener('keypress', e => { if(e.key === 'Enter'){ e.preventDefault(); handleSend(); } });
+
+function resetChat(){
+  chatEl.innerHTML = '';
+  chatState = { step:'idle', order:{items:[],pendingItem:null,mode:null,name:null} };
+  initialMessage();
+}
+
+function initialMessage(){
+  setTimeout(()=>{
+    appendMessage("Bienvenue chez <b>Burger Addict</b> ! 🍔<br>Je suis votre assistant. Comment puis-je vous aider ?", 'bot', true);
+  }, 400);
+}
+
+initialMessage();
+</script>
+</body>
+</html>
