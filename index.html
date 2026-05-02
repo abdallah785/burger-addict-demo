@@ -1018,6 +1018,16 @@ function handleOrderFlow(rawMsg, msg){
   if(chatState.step === 'order_format_proposal'){
     if(/^(oui|yes|ouep|ok|d ?accord|go|c est bon|valide|confirme|👍|je le prends|je prends)/.test(msg.trim())){
       const it = chatState.order.pendingItem;
+      // Si c'est déjà un menu complet, l'ajouter direct au panier (pas de "menu/seul")
+      if(it.cat === 'menu'){
+        chatState.order.items.push({...it});
+        chatState.order.pendingItem = null;
+        chatState.step = 'order_mode';
+        return botReply("✅ <b>"+it.name+"</b> — "+it.price.toFixed(2)+"€", true, 700, [
+          {label:'🍽️ Sur place', value:'sur place'},
+          {label:'🥡 À emporter', value:'à emporter'}
+        ]);
+      }
       chatState.step = 'order_format';
       return botReply("Top ! 🔥 Vous prenez le <b>"+it.name+"</b> :", true, 700, [
         {label:'🥤 En menu', value:'en menu'},
@@ -1106,6 +1116,16 @@ function handleOrderFlow(rawMsg, msg){
   // ÉTAPE 2 : Format menu/seul
   if(chatState.step === 'order_format'){
     const it = chatState.order.pendingItem;
+    // Si pendingItem est déjà un menu complet, l'ajouter direct (filet de sécurité)
+    if(it && it.cat === 'menu'){
+      chatState.order.items.push({...it});
+      chatState.order.pendingItem = null;
+      chatState.step = 'order_mode';
+      return botReply("✅ <b>"+it.name+"</b> — "+it.price.toFixed(2)+"€", true, 700, [
+        {label:'🍽️ Sur place', value:'sur place'},
+        {label:'🥡 À emporter', value:'à emporter'}
+      ]);
+    }
     if(any(msg, [' menu','formule','frite','boisson','en menu'])){
       chatState.step = 'order_drink';
       return botReply("🍟 En menu, c'est noté ! Quelle boisson ?", true, 700, [
@@ -1181,19 +1201,27 @@ function handleOrderFlow(rawMsg, msg){
       return botReply("Je n'ai pas reconnu cette boisson 🤔<br>On a : Coca, Sprite, Fanta, Tropico, Fuze Tea, Evian, Mojito, Tea Hibiscus...", true, 700, drinkChoices);
     }
     const qty = chatState.order.qty || 1;
-    let menuUnit = it.cat === 'signature' ? 13.90 : 10.50;
-    menuUnit += drinkExtra;
+    // Si pendingItem est déjà un menu complet, base = it.price (pas le forfait)
+    // et on n'ajoute pas "Menu " devant son nom (déjà inclus)
+    let menuUnit, menuLabel;
+    if(it.cat === 'menu'){
+      menuUnit = it.price + drinkExtra;
+      menuLabel = it.name;
+    } else {
+      menuUnit = (it.cat === 'signature' ? 13.90 : 10.50) + drinkExtra;
+      menuLabel = 'Menu '+it.name;
+    }
     const menuTotal = menuUnit * qty;
     chatState.order.items.push({
       id:'menu-'+it.id,
-      name:(qty>1?qty+'× ':'')+'Menu '+it.name+' ('+drinkName+')',
+      name:(qty>1?qty+'× ':'')+menuLabel+' ('+drinkName+')',
       price:menuTotal,
       cat:'menu'
     });
     chatState.order.pendingItem = null;
     chatState.order.qty = 1;
     chatState.step = 'order_mode';
-    return botReply("✅ "+(qty>1?qty+'× ':'')+"Menu <b>"+it.name+"</b> + frites + "+drinkName+" — <b>"+menuTotal.toFixed(2)+"€</b>", true, 700, [
+    return botReply("✅ "+(qty>1?qty+'× ':'')+"<b>"+menuLabel+"</b> + frites + "+drinkName+" — <b>"+menuTotal.toFixed(2)+"€</b>", true, 700, [
       {label:'🍽️ Sur place', value:'sur place'},
       {label:'🥡 À emporter', value:'à emporter'}
     ]);
