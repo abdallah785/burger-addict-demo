@@ -23,7 +23,8 @@
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-  body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;height:100dvh;overscroll-behavior:none}
+  /* height JS-controllée via visualViewport pour rester collé au viewport visible (clavier mobile inclus) */
+  body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;height:100svh;height:100dvh;overscroll-behavior:none;position:fixed;inset:0}
 
   .header{
     background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);
@@ -1512,6 +1513,32 @@ function initialMessage(){
     appendMessage("Bienvenue chez <b>Burger Addict</b> ! 🍔<br>Je suis votre assistant. Comment puis-je vous aider ?", 'bot', true);
   }, 400);
 }
+
+/* === Garde le header sticky même quand le clavier mobile s'ouvre ===
+   Sur iOS Safari, le clavier rétrécit le viewport visuel mais ne déclenche
+   pas un resize standard. On utilise visualViewport API pour ajuster la
+   hauteur du body en temps réel et garder le header visible. */
+function syncBodyToViewport(){
+  const vv = window.visualViewport;
+  const h = vv ? vv.height : window.innerHeight;
+  document.body.style.height = h + 'px';
+  // Si le clavier décale le viewport (iOS Safari), on contre-décale le body
+  if(vv){
+    document.body.style.transform = vv.offsetTop ? 'translateY('+vv.offsetTop+'px)' : '';
+  }
+  // Toujours scroller en haut pour empêcher iOS de pousser la page
+  window.scrollTo(0, 0);
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', syncBodyToViewport);
+  window.visualViewport.addEventListener('scroll', syncBodyToViewport);
+}
+window.addEventListener('resize', syncBodyToViewport);
+window.addEventListener('orientationchange', () => setTimeout(syncBodyToViewport, 100));
+// Quand l'input chat est focus / blur, refixer le viewport
+inputEl.addEventListener('focus', () => setTimeout(syncBodyToViewport, 100));
+inputEl.addEventListener('blur', () => setTimeout(syncBodyToViewport, 100));
+syncBodyToViewport();
 
 initialMessage();
 </script>
