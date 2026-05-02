@@ -264,42 +264,81 @@
 </div>
 
 <script>
-/* ============ MENU OFFICIEL BURGER ADDICT ============ */
+/* ============ MENU OFFICIEL BURGER ADDICT — Pierrelaye (Uber Eats) ============ */
 const ITEMS = [
-  // SIGNATURE
-  { id:'addict', name:'Addict Burger', price:9.90, desc:"Smash beef, fromage, sauce Addict signature, salade, tomate, oignons et cornichons", cat:'signature', kw:['addict','signature'] },
-  { id:'snow', name:'Snow Burger', price:10.90, desc:"Filet de poulet pané, salade, crispy oignons, cheddar & bacon de bœuf, sauce smoked", cat:'signature', kw:['snow','snowburger'] },
-  { id:'goat', name:'Goat Burger', price:10.90, desc:"Smash beef, poivron et oignons grillés, provolone, cheddar et sauce burger", cat:'signature', kw:['goat','provolone','poivron'] },
-  { id:'bigsmash', name:'Bigsmash Burger', price:11.40, desc:"Double smash beef, fromage, sauce big, salade, oignons et cornichons", cat:'signature', kw:['bigsmash','big smash','big '] },
-  // CLASSIQUES
-  { id:'original', name:'Original Burger', price:10.00, desc:"Smash beef, fromage, ketchup, moutarde, oignons et cornichons", cat:'classique', kw:['original','classique simple'] },
-  { id:'chicken-smoked', name:'Chicken Smoked Burger', price:10.90, desc:"Filet de poulet pané, fromage, sauce chicken, salade et cornichons", cat:'classique', kw:['chicken smoked','chicken burger','smoked chicken'] },
-  { id:'geant', name:'Le Géant', price:8.90, desc:"Burger XL généreux, smash beef double", cat:'classique', kw:['geant','xl'] },
-  // MENUS
-  { id:'menu-smash', name:'Menu Smash Addict', price:13.90, desc:"1 burger signature + frites + boisson", cat:'menu', kw:['menu smash','menu signature','menu addict'] },
-  { id:'menu-classique', name:'Menu Classique', price:10.50, desc:"1 burger classique + frites + boisson", cat:'menu', kw:['menu classique','menu original'] },
-  { id:'menu-duo', name:'Menu Duo Classique', price:16.50, desc:"2 burgers classiques + frites + boisson", cat:'menu', kw:['menu duo','duo classique','duo '] },
-  { id:'menu-enfant', name:'Menu Enfant', price:7.90, desc:"Mini burger + frites + boisson + dessert", cat:'menu', kw:['menu enfant','enfant','kid'] },
-  // SIDES
-  { id:'tenders', name:'Tenders (5pcs)', price:5.90, desc:"5 tenders de poulet croustillants", cat:'side', kw:['tenders','tender'] },
-  { id:'big-tenders', name:'Big Tenders', price:6.90, desc:"Format XL", cat:'side', kw:['big tenders','xl tenders'] },
-  { id:'wings', name:'Wings Crispy', price:5.90, desc:"Ailes de poulet croustillantes", cat:'side', kw:['wings','ailes','crispy wings'] },
-  { id:'frites', name:'Frites', price:3.90, desc:"Frites maison", cat:'side', kw:['frite','frites','fries','potato'] },
-  { id:'nuggets', name:'Nuggets', price:5.50, desc:"Nuggets de poulet", cat:'side', kw:['nuggets','nugget','bouchee'] },
+  // SMASH ADDICTS (signature)
+  { id:'original', name:'Original Burger', price:10.00, desc:"Smash beef, fromage, ketchup, moutarde, oignons et cornichons. Version Veggie avec steak végétal", cat:'signature', kw:['original'] },
+  { id:'addict', name:'Addict Burger', price:11.90, desc:"Smash beef, fromage, sauce Addict, salade, tomate, oignons et cornichons. Version veggie avec steak végétal", cat:'signature', kw:['addict','signature'] },
+  { id:'smoked', name:'Smoked Burger', price:10.90, desc:"Smash beef, bacon de bœuf, fromage, sauce smoked, salade, tomates et crispy onions", cat:'signature', kw:['smoked burger','smoked '] },
+  { id:'chicky', name:'Chicky Burger', price:9.90, desc:"Filet de poulet pané, fromage, sauce chicken burger, salade et cornichons", cat:'signature', kw:['chicky','chicky burger'] },
+  { id:'chicken-purple', name:'Chicken Purple', price:10.90, desc:"Filet de poulet pané, red onion pickles, coleslaw purple sweet, aloco", cat:'signature', kw:['chicken purple','purple'] },
+  { id:'chicken-gold', name:'Chicken Gold', price:10.90, desc:"Filet de poulet pané, coleslaw spicy, confit d'oignon, aloco", cat:'signature', kw:['chicken gold','gold'] },
+  { id:'snow', name:'Snow Burger', price:10.90, desc:"Smash beef, fromage à raclette, red onion, bacon de bœuf, pomme paille", cat:'signature', kw:['snow','snowburger'] },
+  { id:'goat', name:'Goat Burger', price:10.90, desc:"Smash beef, fromage de chèvre, éclat de noix, miel, confit d'oignon, salade, tomate, mayo", cat:'signature', kw:['goat','chevre'] },
+  { id:'chicken-smoked', name:'Chicken Smoked Burger', price:10.90, desc:"Filet de poulet pané, salade, crispy oignons, cheddar & bacon de bœuf, sauce smoked", cat:'signature', kw:['chicken smoked','smoked chicken'] },
+  { id:'cheesmash', name:'Cheesmash Burger', price:10.90, desc:"Smash beef, poivron et oignons grillés, provolone, cheddar et sauce burger", cat:'signature', kw:['cheesmash','provolone','poivron'] },
+  { id:'bigsmash', name:'Bigsmash Burger', price:11.40, desc:"Smash beef, fromage, sauce big, salade, oignons et cornichons", cat:'signature', kw:['bigsmash','big smash','big '] },
+  { id:'geesmash', name:'Geesmash', price:11.40, desc:"Smash signature Geesmash", cat:'signature', kw:['geesmash','gee smash'] },
+  { id:'baby-smash', name:'Baby Smash Addict', price:15.90, desc:"3 baby smash : addict, geesmash et chicken smoked", cat:'signature', kw:['baby smash','baby '] },
+  // LES CLASSIQUES
+  { id:'double-cheese', name:'Le Double Cheese', price:7.90, desc:"2 steaks, 2 fromages, ketchup, moutarde, oignons et cornichons", cat:'classique', kw:['double cheese','double-cheese'] },
+  { id:'geant', name:'Le Géant', price:8.90, desc:"2 steaks, fromage, sauce burger, salade et oignons", cat:'classique', kw:['geant','le geant','xl'] },
+  { id:'le-chicken', name:'Le Chicken', price:8.90, desc:"Poulet pané, fromage, mayonnaise et salade", cat:'classique', kw:['le chicken','chicken classique'] },
+  { id:'le-fish', name:'Le Fish', price:8.90, desc:"Poisson pané, fromage et sauce fish", cat:'classique', kw:['le fish','fish','poisson'] },
+  // NOS MENUS
+  { id:'menu-smash', name:'Menu Smash Addict', price:13.90, desc:"Tous nos Smashed Burger au choix, servis avec frites ou potatoes et une boisson", cat:'menu', kw:['menu smash','menu signature','menu addict'] },
+  { id:'menu-duo-smash', name:'Menu Duo Smash Addict', price:22.40, desc:"Duo de Smash Burger au choix, servis avec un accompagnement frites ou potatoes et une boisson", cat:'menu', kw:['menu duo smash','duo smash addict','menu duo addict'] },
+  { id:'menu-classique', name:'Menu Classique', price:10.50, desc:"1 burger classique, frites ou potatoes et une boisson", cat:'menu', kw:['menu classique','menu original'] },
+  { id:'menu-duo', name:'Menu Duo Classique', price:16.50, desc:"Duo de burger classique au choix, frites ou potatoes et une boisson", cat:'menu', kw:['menu duo classique','duo classique','menu duo '] },
+  { id:'menu-enfant', name:'Menu Enfant', price:7.90, desc:"4 nuggets ou 1 cheeseburger, 1 frite ou potatoes, 1 Tropico mini, 1 compote et 1 jouet", cat:'menu', kw:['menu enfant','enfant','kid'] },
+  { id:'menu-cesar', name:'Menu Salade César', price:12.90, desc:"Salade, poulet, croûtons, tomates cerises, parmesan, sauce César et balsamique avec une boisson", cat:'menu', kw:['salade cesar','menu cesar','cesar'] },
+  { id:'menu-baby-smash', name:'Menu Baby Smash Addict', price:21.60, desc:"3 baby smash (addict, geesmash et chicken smoked), un accompagnement et une boisson au choix", cat:'menu', kw:['menu baby','menu baby smash'] },
+  // ADDICTIZER'S = PETITE FAIM (sides)
+  { id:'wings', name:'Wings Crispy', price:5.90, desc:"3 ou 6 pièces au choix", cat:'side', kw:['wings','ailes','crispy wings'] },
+  { id:'nuggets', name:'Nuggets', price:5.90, desc:"4 ou 8 pièces au choix", cat:'side', kw:['nuggets','nugget'] },
+  { id:'tenders', name:'Tenders', price:5.90, desc:"2 ou 4 pièces au choix", cat:'side', kw:['tenders','tender'] },
+  { id:'pop-nuggets', name:'Pop Nuggets', price:6.90, desc:"3 ou 6 pièces au choix", cat:'side', kw:['pop nuggets','pop nugget'] },
+  { id:'hamburger', name:'Hamburger', price:4.90, desc:"Steak, ketchup, moutarde, oignons et cornichons", cat:'side', kw:['hamburger '] },
+  { id:'cheese-burger', name:'Cheese Burger', price:5.40, desc:"Steak, fromage, ketchup, moutarde, oignons et cornichons", cat:'side', kw:['cheese burger','cheeseburger'] },
+  { id:'frites', name:'Frites', price:3.90, desc:"Frites maison", cat:'side', kw:['frite','frites','fries'] },
+  { id:'potatoes', name:'Potatoes', price:3.90, desc:"Potatoes maison", cat:'side', kw:['potatoes','patate','potato '] },
   // DESSERTS
-  { id:'tiramisu', name:'Tiramisu', price:5.90, desc:"Tiramisu maison", cat:'dessert', kw:['tiramisu'] },
-  { id:'croffle', name:'Croffle', price:5.90, desc:"Croissant-gaufre signature", cat:'dessert', kw:['croffle '] },
-  { id:'creamy-croffle', name:'Creamy Croffle', price:6.90, desc:"Croffle crémeux signature", cat:'dessert', kw:['creamy','creamy croffle'] },
+  { id:'tiramisu', name:'Tiramisu', price:5.90, desc:"Goût au choix", cat:'dessert', kw:['tiramisu'] },
+  { id:'tiramisu-daim', name:'Tiramisu Daim Caramel', price:5.90, desc:"Tiramisu version Daim caramel", cat:'dessert', kw:['daim','caramel'] },
+  { id:'tiramisu-fraisier', name:'Tiramisu Fraisier', price:5.90, desc:"Tiramisu version fraise", cat:'dessert', kw:['fraisier','tiramisu fraise'] },
+  { id:'tiramisu-manguier', name:'Tiramisu Manguier', price:5.90, desc:"Tiramisu version mangue", cat:'dessert', kw:['manguier','tiramisu mangue'] },
+  { id:'tiramisu-pistache', name:'Tiramisu Pistache', price:6.50, desc:"Tiramisu pistache premium", cat:'dessert', kw:['pistache','tiramisu pistache'] },
   { id:'sundae', name:'Sundae', price:4.90, desc:"Glace + topping", cat:'dessert', kw:['sundae'] },
+  { id:'milkshake', name:'Milkshake', price:5.90, desc:"Vanille, fraise, oreo, chocolat", cat:'dessert', kw:['milkshake','shake','milk shake'] },
+  { id:'croffle', name:'Croffle', price:5.90, desc:"Croissant-gaufre signature", cat:'dessert', kw:['croffle '] },
+  { id:'creamy-croffle', name:'Creamy Croffle', price:6.90, desc:"Mélange chaud-froid : glace sur lit de gaufre à pâte à croissant, parfum au choix", cat:'dessert', kw:['creamy','creamy croffle'] },
   // BOISSONS
-  { id:'milkshake', name:'Milkshake', price:5.90, desc:"Vanille, fraise, oreo, chocolat", cat:'drink', kw:['milkshake','shake','milk shake'] },
+  { id:'coca', name:'Coca-Cola 33cl', price:2.80, desc:"Canette 33cl", cat:'drink', kw:['coca','cola'] },
+  { id:'coca-zero', name:'Coca-Cola Zéro 33cl', price:2.80, desc:"Canette 33cl Zéro", cat:'drink', kw:['coca zero','cola zero','zero'] },
+  { id:'coca-cherry', name:'Coca-Cola Cherry 33cl', price:2.80, desc:"Canette 33cl Cherry", cat:'drink', kw:['coca cherry','cherry'] },
+  { id:'sprite', name:'Sprite 33cl', price:2.80, desc:"Canette 33cl citron-lime", cat:'drink', kw:['sprite'] },
+  { id:'fanta-orange', name:'Fanta Orange 33cl', price:2.20, desc:"Canette 33cl orange", cat:'drink', kw:['fanta orange','fanta '] },
+  { id:'fanta-citron', name:'Fanta Citron 33cl', price:2.80, desc:"Canette 33cl citron", cat:'drink', kw:['fanta citron'] },
+  { id:'tropico-original', name:'Tropico Original 33cl', price:2.80, desc:"Canette 33cl Tropico Original", cat:'drink', kw:['tropico original','tropico '] },
+  { id:'tropico-tropical', name:'Tropico Tropical 33cl', price:2.80, desc:"Canette 33cl Tropico Tropical", cat:'drink', kw:['tropico tropical','tropical'] },
+  { id:'fuze-peche', name:'Fuze Tea Pêche Intense 33cl', price:2.80, desc:"Canette 33cl Fuze Tea pêche intense", cat:'drink', kw:['fuze peche','fuze pêche','fuze tea peche'] },
+  { id:'fuze-citron', name:'Fuze Tea Citron Vert & Menthe 33cl', price:2.80, desc:"Canette 33cl Fuze Tea citron vert & menthe", cat:'drink', kw:['fuze citron','fuze menthe','fuze tea citron'] },
+  { id:'capri-sun', name:'Capri Sun 20cl', price:2.20, desc:"Pochette 20cl", cat:'drink', kw:['capri sun','capri','caprisun'] },
+  { id:'sanpellegrino', name:'San Pellegrino 50cl', price:2.80, desc:"Eau pétillante 50cl", cat:'drink', kw:['san pellegrino','pellegrino','sanpellegrino','petillante'] },
+  { id:'evian', name:'Evian 50cl', price:2.80, desc:"Eau plate Evian 50cl", cat:'drink', kw:['evian','eau','water','minerale'] },
+  // ADDICT TEA & CITRONNADE
+  { id:'tea-hibiscus', name:'Tea Hibiscus', price:6.90, desc:"Thé glacé hibiscus signature", cat:'drink', kw:['hibiscus','tea hibiscus'] },
+  { id:'tea-pasteque', name:'Tea Pastèque', price:6.90, desc:"Thé glacé pastèque signature", cat:'drink', kw:['pasteque','tea pasteque','pastèque'] },
+  { id:'tea-peche-mangue', name:'Tea Pêche Mangue', price:6.90, desc:"Thé glacé pêche-mangue signature", cat:'drink', kw:['peche mangue','tea peche','pêche mangue','mangue'] },
   { id:'mojito', name:'Citronnade Mojito', price:6.90, desc:"Citronnade fraîche menthe & citron", cat:'drink', kw:['mojito','citronnade','citron menthe'] },
-  { id:'coca', name:'Coca-Cola 33cl', price:2.50, desc:"Canette 33cl", cat:'drink', kw:['coca','cola'] },
-  { id:'eau', name:'Eau minérale 50cl', price:1.50, desc:"Bouteille 50cl", cat:'drink', kw:['eau','water','minerale'] }
+  { id:'mojito-fraise', name:'Citronnade Mojito Fraise', price:6.90, desc:"Citronnade Mojito version fraise", cat:'drink', kw:['mojito fraise','citronnade fraise'] },
+  { id:'curacao', name:'Citronnade Curaço Gingembre', price:6.90, desc:"Citronnade Curaço gingembre signature", cat:'drink', kw:['curacao','curaco','gingembre','curaçao'] }
 ];
 
 /* ============ BOISSONS NON DISPONIBLES (alternatives à proposer) ============ */
-const UNAVAILABLE_DRINKS = ['sprite','fanta','oasis','7up','ice tea','icetea','seven up','fuze tea','fuzetea','the glace','pepsi'];
+// Vérifié sur Uber Eats : Sprite, Fanta, Tropico, Fuze Tea, Capri Sun sont vendus → retirés.
+// Restent indispo : Oasis, 7up, Pepsi, Red Bull, Perrier, alcool.
+const UNAVAILABLE_DRINKS = ['oasis','7up','seven up','pepsi','red bull','redbull','monster','perrier'];
 
 /* ============ ÉTAT ============ */
 let chatState = {
@@ -421,13 +460,32 @@ function parseFullOrder(rawMsg){
     }
   }
 
-  // Boisson (uniquement boissons disponibles)
-  if(/coca|cola/.test(n)) found.drink = get('coca');
-  else if(/\beau\b|water|minerale/.test(n)) found.drink = get('eau');
-  else if(/mojito|citronnade/.test(n)) found.drink = get('mojito');
-  else if(/milkshake|milk shake/.test(n)) found.drink = get('milkshake');
+  // Boisson (uniquement boissons disponibles dans le menu)
+  if(/coca cherry|cherry/.test(n)) found.drink = get('coca-cherry');
+  else if(/coca zero|cola zero|\bzero\b/.test(n)) found.drink = get('coca-zero');
+  else if(/coca|cola/.test(n)) found.drink = get('coca');
+  else if(/sprite/.test(n)) found.drink = get('sprite');
+  else if(/fanta orange|orange fanta/.test(n)) found.drink = get('fanta-orange');
+  else if(/fanta citron/.test(n)) found.drink = get('fanta-citron');
+  else if(/fanta/.test(n)) found.drink = get('fanta-orange');
+  else if(/tropico tropical|tropical/.test(n)) found.drink = get('tropico-tropical');
+  else if(/tropico/.test(n)) found.drink = get('tropico-original');
+  else if(/fuze.*peche|fuze.*pêche|fuze peche|peche fuze/.test(n)) found.drink = get('fuze-peche');
+  else if(/fuze.*citron|fuze.*menthe|fuze citron/.test(n)) found.drink = get('fuze-citron');
+  else if(/fuze ?tea|ice ?tea|icetea|the glace|thé glacé/.test(n)) found.drink = get('fuze-peche');
+  else if(/capri ?sun|capri/.test(n)) found.drink = get('capri-sun');
+  else if(/san ?pellegrino|pellegrino|petillante|pétillante/.test(n)) found.drink = get('sanpellegrino');
+  else if(/evian|\beau\b|water|minerale/.test(n)) found.drink = get('evian');
+  else if(/mojito fraise/.test(n)) found.drink = get('mojito-fraise');
+  else if(/mojito|citronnade mojito/.test(n)) found.drink = get('mojito');
+  else if(/curacao|curaco|curaçao|gingembre/.test(n)) found.drink = get('curacao');
+  else if(/citronnade/.test(n)) found.drink = get('mojito');
+  else if(/hibiscus/.test(n)) found.drink = get('tea-hibiscus');
+  else if(/pasteque|pastèque/.test(n)) found.drink = get('tea-pasteque');
+  else if(/peche mangue|pêche mangue|mangue/.test(n)) found.drink = get('tea-peche-mangue');
+  else if(/milkshake|milk shake|shake/.test(n)) found.drink = get('milkshake');
   // Boisson non dispo détectée → flag pour rediriger
-  if(!found.drink && /sprite|fanta|oasis|7 ?up|seven up|ice ?tea|icetea|fuze ?tea|fuzetea|the glace|pepsi/.test(n)){
+  if(!found.drink && /oasis|7 ?up|seven up|pepsi|red ?bull|monster|perrier/.test(n)){
     found.unavailableDrink = true;
   }
 
@@ -446,34 +504,28 @@ function parseFullOrder(rawMsg){
 }
 
 /* ============ BOISSONS ALTERNATIVES (qu'on n'a pas) ============ */
-const ALT_LIST = "<b>Coca</b>, <b>Citronnade Mojito</b>, <b>Eau</b> ou <b>Milkshake</b>";
+const ALT_LIST = "<b>Coca</b>, <b>Sprite</b>, <b>Fanta</b>, <b>Tropico</b>, <b>Fuze Tea</b>, <b>Citronnade Mojito</b> ou <b>Evian</b>";
 function handleAlternativeDrinks(msg){
   if(/\bpepsi\b/.test(msg)){
     return "On n'a pas de <b>Pepsi</b>, on a du <b>Coca-Cola</b> à la place 😊 Ça vous va ?";
   }
-  if(/\bsprite\b/.test(msg)){
-    return "On n'a pas de <b>Sprite</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
-  }
-  if(/\bfanta\b/.test(msg)){
-    return "On n'a pas de <b>Fanta</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
-  }
   if(/\boasis\b/.test(msg)){
-    return "On n'a pas d'<b>Oasis</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+    return "On n'a pas d'<b>Oasis</b> 😊 Mais on a <b>Tropico Tropical</b> ou <b>Tropico Original</b> qui font le job ! Sinon : "+ALT_LIST+".";
   }
   if(/7 ?up|seven up/.test(msg)){
-    return "On n'a pas de <b>7up</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+    return "On n'a pas de <b>7up</b> 😊 Mais on a <b>Sprite</b> à la place. Ça vous va ?";
   }
-  if(/ice ?tea|icetea|fuze ?tea|fuzetea|the glace|thé glacé/.test(msg)){
-    return "On n'a pas d'<b>Ice Tea</b> 😊 Mais on a "+ALT_LIST+". Lequel vous tente ?";
+  if(/perrier/.test(msg)){
+    return "On n'a pas de <b>Perrier</b>, mais on a la <b>San Pellegrino 50cl</b> qui pétille tout aussi bien 🫧";
   }
   if(/\bbiere\b|\bvin\b|alcool|champagne|whisky|rhum|cocktail/.test(msg)){
-    return "Nous sommes <b>100% halal</b> donc pas d'alcool 🚫🍷<br>On a <b>Coca</b>, <b>Citronnade Mojito</b> sans alcool 🍋, <b>Eau</b> ou <b>Milkshake</b>.";
+    return "Nous sommes <b>100% halal</b> donc pas d'alcool 🚫🍷<br>On a "+ALT_LIST+" — tous sans alcool.";
   }
   if(/\bredbull\b|red bull|monster|energie|energy drink/.test(msg)){
     return "Pas de boisson énergisante chez nous 😊 On a "+ALT_LIST+".";
   }
-  if((/\bjus\b|orange|pomme|abricot|ananas/.test(msg)) && !msg.includes('avec')){
-    return "Pas de jus de fruits actuellement 😊 On a <b>Coca</b>, <b>Citronnade Mojito</b> 🍋, <b>Eau</b> ou <b>Milkshake</b> qui font le job !";
+  if((/\bjus\b|abricot|ananas/.test(msg)) && !msg.includes('avec')){
+    return "Pas de jus de fruits classique, mais on a <b>Tropico Tropical</b>, <b>Capri Sun</b>, <b>Fuze Tea Pêche</b> ou <b>Citronnade Mojito</b> qui font le job !";
   }
   return null;
 }
@@ -490,10 +542,10 @@ function answerAboutDish(rawMsg, msg){
   // "Différence entre X et Y"
   if(/difference|differen|compar/.test(msg)){
     if(/snow/.test(msg) && /addict/.test(msg)){
-      return "🆚 <b>Snow vs Addict</b> :<br>• <b>Snow</b> ❄️ → poulet pané crispy + bacon, plus fun<br>• <b>Addict</b> 🔥 → smash beef + sauce signature, plus classique<br>Snow = poulet, Addict = bœuf. Lequel vous tente ?";
+      return "🆚 <b>Snow vs Addict</b> :<br>• <b>Snow</b> ❄️ → smash beef, fromage raclette, bacon de bœuf, pomme paille, plus fondant<br>• <b>Addict</b> 🔥 → smash beef + sauce Addict signature, plus classique. Les deux au bœuf, lequel vous tente ?";
     }
     if(/goat/.test(msg) && /addict/.test(msg)){
-      return "🆚 <b>Goat vs Addict</b> :<br>• <b>Goat</b> 🐐 → provolone fondu + légumes grillés, plus original<br>• <b>Addict</b> 🔥 → fromage + sauce signature, plus classique";
+      return "🆚 <b>Goat vs Addict</b> :<br>• <b>Goat</b> 🐐 → fromage de chèvre + miel + éclat de noix, plus original<br>• <b>Addict</b> 🔥 → fromage + sauce signature, plus classique";
     }
     if(/big/.test(msg) && /geant/.test(msg)){
       return "🆚 <b>Bigsmash vs Géant</b> :<br>• <b>Bigsmash</b> 💪 → 11,40€, double smash + sauce big<br>• <b>Géant</b> → 8,90€, XL plus simple, meilleur rapport quantité/prix";
@@ -533,17 +585,17 @@ function handleHumanIntent(msg){
 function getSmartSuggestion(rawMsg, msg){
   // SUPRISE / CHOIX AUTO
   if(any(msg, ['surprise','choisis pour moi','choisis moi','etonne moi','propose moi','recommande'])){
-    return { item:get('snow'), text:"Le <b>Snow Burger</b> ❄️ est notre chouchou : poulet pané croustillant, crispy oignons, cheddar et bacon de bœuf, sauce smoked. <b>10,90€</b>. Tenté ?", action:'suggest' };
+    return { item:get('snow'), text:"Le <b>Snow Burger</b> ❄️ est notre chouchou : smash beef, fromage à raclette, red onion, bacon de bœuf et pomme paille. <b>10,90€</b>. Tenté ?", action:'suggest' };
   }
   if(any(msg, ['moins cher','pas cher','economique','premier prix','petit budget'])){
     return { item:get('geant'), text:"Le <b>Géant</b> à <b>8,90€</b> ! Burger XL généreux pour le prix d'un classique. On part dessus ?", action:'suggest' };
   }
   if(any(msg, ['le meilleur','le top','le mieux','votre best','best seller','populaire'])){
-    return { item:get('addict'), text:"Notre <b>Addict Burger</b> 🔥 — c'est notre signature et le préféré des clients. <b>9,90€</b>. On y va ?", action:'suggest' };
+    return { item:get('addict'), text:"Notre <b>Addict Burger</b> 🔥 — c'est notre signature et le préféré des clients. <b>11,90€</b>. On y va ?", action:'suggest' };
   }
   // GOÛTS / PRÉFÉRENCES
   if(any(msg, ['epice','spicy','piquant',' fort ','releve','pimente','feu '])){
-    return { item:get('addict'), text:"Notre <b>Addict Burger</b> 🔥 est parfait pour ça ! Sauce Addict signature, parfait équilibre. <b>9,90€</b>. Je vous le mets ?", action:'suggest' };
+    return { item:get('addict'), text:"Notre <b>Addict Burger</b> 🔥 est parfait pour ça ! Sauce Addict signature, parfait équilibre. <b>11,90€</b>. Je vous le mets ?", action:'suggest' };
   }
   if(any(msg, [' doux ','simple ','basique','sans chichi','traditionnel','normal '])){
     return { item:get('original'), text:"L'<b>Original Burger</b> est parfait alors : smash beef, fromage, ketchup-moutarde, oignons et cornichons. Le vrai classique, <b>10€</b>.", action:'suggest' };
@@ -552,48 +604,56 @@ function getSmartSuggestion(rawMsg, msg){
     return { item:get('bigsmash'), text:"Le <b>Bigsmash</b> 💪 — double steak smash, fromage, sauce big. <b>11,40€</b>. Pour les vraies grosses faims !", action:'suggest' };
   }
   if(any(msg, ['special','unique','qui change','different','original ','originalite','sortir des sentiers'])){
-    return { item:get('goat'), text:"Le <b>Goat Burger</b> 🐐 — provolone fondu, poivron et oignons grillés. Ça change ! <b>10,90€</b>", action:'suggest' };
+    return { item:get('goat'), text:"Le <b>Goat Burger</b> 🐐 — fromage de chèvre, miel, éclat de noix, confit d'oignon. Ça change ! <b>10,90€</b>", action:'suggest' };
   }
   if(any(msg, ['frais ','leger','pas trop lourd','pas trop gras'])){
-    return { item:get('snow'), text:"Le <b>Snow Burger</b> ❄️ — poulet pané croustillant, plus léger qu'un steak. <b>10,90€</b>", action:'suggest' };
+    return { item:get('chicky'), text:"Le <b>Chicky Burger</b> 🍗 — poulet pané croustillant, plus léger qu'un steak. <b>9,90€</b>", action:'suggest' };
   }
   // VIANDE / TYPE
   if(any(msg, ['steak','boeuf','beef','viande','smash beef','de la viande','un peu de viande'])){
-    return { text:"On a plusieurs smash burgers au bœuf 🥩 :<br>• <b>Original</b> — 10€<br>• <b>Addict</b> 🔥 — 9,90€ (signature)<br>• <b>Goat</b> 🐐 — 10,90€<br>• <b>Bigsmash</b> 💪 — 11,40€<br><br>Lequel vous tente ?", choices:[
+    return { text:"On a plusieurs smash burgers au bœuf 🥩 :<br>• <b>Original</b> — 10€<br>• <b>Addict</b> 🔥 — 11,90€ (signature)<br>• <b>Snow</b> ❄️ — 10,90€<br>• <b>Goat</b> 🐐 — 10,90€<br>• <b>Cheesmash</b> 🧀 — 10,90€<br>• <b>Bigsmash</b> 💪 — 11,40€<br>• <b>Geesmash</b> — 11,40€<br><br>Lequel vous tente ?", choices:[
       {label:'🔥 Addict', value:'Addict Burger'},
-      {label:'🍔 Original', value:'Original Burger'},
+      {label:'❄️ Snow', value:'Snow Burger'},
       {label:'🐐 Goat', value:'Goat Burger'},
+      {label:'🧀 Cheesmash', value:'Cheesmash Burger'},
       {label:'💪 Bigsmash', value:'Bigsmash Burger'}
     ] };
   }
   if(any(msg, ['poulet','chicken','pane','filet','volaille'])){
-    return { text:"On a 2 burgers au poulet 🍗 :<br>• <b>Snow</b> ❄️ — crispy oignons + bacon, sauce smoked<br>• <b>Chicken Smoked</b> — fromage + sauce chicken<br>Les 2 à <b>10,90€</b>", choices:[
-      {label:'❄️ Snow', value:'Snow Burger'},
-      {label:'🍗 Chicken Smoked', value:'Chicken Smoked Burger'}
+    return { text:"On a 5 burgers au poulet 🍗 :<br>• <b>Chicky</b> — 9,90€<br>• <b>Chicken Purple</b> — 10,90€<br>• <b>Chicken Gold</b> — 10,90€<br>• <b>Chicken Smoked</b> — 10,90€<br>• <b>Le Chicken</b> — 8,90€", choices:[
+      {label:'🍗 Chicky 9,90€', value:'Chicky Burger'},
+      {label:'💜 Chicken Purple', value:'Chicken Purple'},
+      {label:'🥇 Chicken Gold', value:'Chicken Gold'},
+      {label:'🔥 Chicken Smoked', value:'Chicken Smoked Burger'}
     ] };
   }
   if(any(msg, ['fromage','cheese','cheddar','mozza'])){
-    return { text:"Tous nos burgers ont du fromage 🧀 ! Les plus fromagés :<br>• <b>Goat</b> — provolone + cheddar<br>• <b>Snow</b> — cheddar + bacon<br>• <b>Original</b> — cheese classique", choices:[
-      {label:'🐐 Goat', value:'Goat Burger'},
+    return { text:"Nos plus fromagés 🧀 :<br>• <b>Cheesmash</b> — provolone + cheddar<br>• <b>Snow</b> — fromage à raclette + bacon<br>• <b>Goat</b> — fromage de chèvre + miel<br>• <b>Le Double Cheese</b> — 2 fromages, 7,90€", choices:[
+      {label:'🧀 Cheesmash', value:'Cheesmash Burger'},
       {label:'❄️ Snow', value:'Snow Burger'},
-      {label:'🍔 Original', value:'Original Burger'}
+      {label:'🐐 Goat', value:'Goat Burger'},
+      {label:'🍔 Double Cheese', value:'Le Double Cheese'}
     ] };
   }
   // BURGER GÉNÉRIQUE
   if(any(msg, [' burger ','un burger','le burger','quel burger','sandwich']) && !findItem(rawMsg)){
     return { text:"Pour un burger, je vous propose nos top 3 :", choices:[
-      {label:'🔥 Addict — 9,90€', value:'Addict Burger'},
+      {label:'🔥 Addict — 11,90€', value:'Addict Burger'},
       {label:'❄️ Snow — 10,90€', value:'Snow Burger'},
       {label:'🍔 Original — 10€', value:'Original Burger'}
     ] };
   }
   // BOISSONS
   if(any(msg, [' boire','soif','boisson','drink','quoi boire']) && !any(msg,['avec'])){
-    return { text:"🥤 Au choix :", choices:[
-      {label:'Coca 2,50€', value:'Coca'},
-      {label:'Eau 1,50€', value:'Eau'},
+    return { text:"🥤 Au choix : sodas (Coca, Sprite, Fanta, Tropico…), Fuze Tea, Capri Sun, Evian, San Pellegrino, ou nos signatures Tea & Citronnade.", choices:[
+      {label:'Coca 2,80€', value:'Coca'},
+      {label:'Sprite 2,80€', value:'Sprite'},
+      {label:'Fanta Orange 2,20€', value:'Fanta Orange'},
+      {label:'Tropico', value:'Tropico Tropical'},
+      {label:'Fuze Tea', value:'Fuze Tea Pêche'},
+      {label:'Evian 2,80€', value:'Evian'},
       {label:'Mojito 6,90€', value:'Citronnade Mojito'},
-      {label:'Milkshake 5,90€', value:'Milkshake'}
+      {label:'Tea Hibiscus 6,90€', value:'Tea Hibiscus'}
     ] };
   }
   if(any(msg, ['rafraichi','citron','menthe','frais a boire'])){
@@ -665,7 +725,7 @@ function processMessage(rawMsg){
   }
   // Prix
   if(any(msg, ['prix ','combien','coute','tarif','c est cher'])){
-    return botReply("💰 <b>NOS PRIX</b><br><br>🍔 Burgers : 8,90€ → 11,40€<br>🎁 Menus : 7,90€ → 16,50€<br>🍟 Accomp. : 3,90€ → 6,90€<br>🥤 Boissons : 1,50€ → 6,90€<br><br>Tapez \"menu\" pour la carte complète", true);
+    return botReply("💰 <b>NOS PRIX</b><br><br>🍔 Burgers : 7,90€ → 11,90€<br>🎁 Menus : 7,90€ → 22,40€<br>🍟 Accomp. : 3,90€ → 6,90€<br>🥤 Sodas : 2,20€ → 2,80€<br>🍵 Tea & Citronnade : 6,90€<br><br>Tapez \"menu\" pour la carte complète", true);
   }
   // Allergènes / végé
   if(any(msg, ['allerg','gluten','lactose','intoler'])){
@@ -676,7 +736,7 @@ function processMessage(rawMsg){
   }
   // Recommandation
   if(any(msg, ['recommand','conseil','meilleur','populair','le top','quoi prendre'])){
-    return botReply("⭐ <b>BEST-SELLERS</b><br><br>1️⃣ <b>Addict</b> ❤️ — signature<br>2️⃣ <b>Snow</b> 🥓 — crispy<br>3️⃣ <b>Bigsmash</b> 💪 — grosse faim<br>4️⃣ <b>Goat</b> 🐐 — provolone", true, 900, [
+    return botReply("⭐ <b>BEST-SELLERS</b><br><br>1️⃣ <b>Addict</b> ❤️ — signature 11,90€<br>2️⃣ <b>Snow</b> ❄️ — beef raclette 10,90€<br>3️⃣ <b>Bigsmash</b> 💪 — grosse faim 11,40€<br>4️⃣ <b>Goat</b> 🐐 — chèvre & miel 10,90€", true, 900, [
       {label:'🔥 Addict', value:'Addict Burger'},
       {label:'❄️ Snow', value:'Snow Burger'},
       {label:'💪 Bigsmash', value:'Bigsmash Burger'},
@@ -865,10 +925,14 @@ function handleFullOrder(parsed){
     chatState.order = { items:[], pendingItem:burger, pendingSide:parsed.side, qty:qty, mode:null, name:null };
     chatState.step = 'order_drink';
     return botReply("Top ! "+(qty>1?qty+'× ':'')+"<b>"+burger.name+"</b> avec "+parsed.side.name+" 🍟<br>Et la boisson ?", true, 800, [
-      {label:'Coca 2,50€', value:'Coca'},
-      {label:'Eau 1,50€', value:'Eau'},
+      {label:'Coca 2,80€', value:'Coca'},
+      {label:'Sprite 2,80€', value:'Sprite'},
+      {label:'Fanta Orange 2,20€', value:'Fanta Orange'},
+      {label:'Tropico Tropical', value:'Tropico Tropical'},
+      {label:'Fuze Tea Pêche', value:'Fuze Tea Pêche'},
+      {label:'Evian 2,80€', value:'Evian'},
       {label:'Mojito +2€', value:'Mojito'},
-      {label:'Milkshake +1€', value:'Milkshake'}
+      {label:'Tea Hibiscus +2€', value:'Tea Hibiscus'}
     ]);
   }
 
@@ -877,10 +941,14 @@ function handleFullOrder(parsed){
     chatState.order = { items:[], pendingItem:burger, qty:qty, mode:null, name:null };
     chatState.step = 'order_drink';
     return botReply("✅ "+(qty>1?qty+'× ':'')+"<b>Menu "+burger.name+"</b> (+frites + boisson) ! Quelle boisson ?", true, 700, [
-      {label:'Coca 2,50€', value:'Coca'},
-      {label:'Eau 1,50€', value:'Eau'},
+      {label:'Coca 2,80€', value:'Coca'},
+      {label:'Sprite 2,80€', value:'Sprite'},
+      {label:'Fanta Orange 2,20€', value:'Fanta Orange'},
+      {label:'Tropico Tropical', value:'Tropico Tropical'},
+      {label:'Fuze Tea Pêche', value:'Fuze Tea Pêche'},
+      {label:'Evian 2,80€', value:'Evian'},
       {label:'Mojito +2€', value:'Mojito'},
-      {label:'Milkshake +1€', value:'Milkshake'}
+      {label:'Tea Hibiscus +2€', value:'Tea Hibiscus'}
     ]);
   }
   // Fallback (ne devrait pas arriver)
@@ -1004,10 +1072,14 @@ function handleOrderFlow(rawMsg, msg){
         chatState.order.pendingItem = item;
         chatState.step = 'order_drink';
         return botReply("✅ <b>"+item.name+"</b> en menu (+frites + boisson)<br>Quelle boisson ?", true, 700, [
-          {label:'Coca 2,50€', value:'Coca'},
-          {label:'Eau 1,50€', value:'Eau'},
+          {label:'Coca 2,80€', value:'Coca'},
+          {label:'Sprite 2,80€', value:'Sprite'},
+          {label:'Fanta Orange 2,20€', value:'Fanta Orange'},
+          {label:'Tropico Tropical', value:'Tropico Tropical'},
+          {label:'Fuze Tea Pêche', value:'Fuze Tea Pêche'},
+          {label:'Evian 2,80€', value:'Evian'},
           {label:'Mojito +2€', value:'Mojito'},
-          {label:'Milkshake +1€', value:'Milkshake'}
+          {label:'Tea Hibiscus +2€', value:'Tea Hibiscus'}
         ]);
       }
       chatState.order.pendingItem = item;
@@ -1039,10 +1111,14 @@ function handleOrderFlow(rawMsg, msg){
     if(any(msg, [' menu','formule','frite','boisson','en menu'])){
       chatState.step = 'order_drink';
       return botReply("🍟 En menu, c'est noté ! Quelle boisson ?", true, 700, [
-        {label:'Coca 2,50€', value:'Coca'},
-        {label:'Eau 1,50€', value:'Eau'},
+        {label:'Coca 2,80€', value:'Coca'},
+        {label:'Sprite 2,80€', value:'Sprite'},
+        {label:'Fanta Orange 2,20€', value:'Fanta Orange'},
+        {label:'Tropico Tropical', value:'Tropico Tropical'},
+        {label:'Fuze Tea Pêche', value:'Fuze Tea Pêche'},
+        {label:'Evian 2,80€', value:'Evian'},
         {label:'Mojito +2€', value:'Mojito'},
-        {label:'Milkshake +1€', value:'Milkshake'}
+        {label:'Tea Hibiscus +2€', value:'Tea Hibiscus'}
       ]);
     }
     if(any(msg, [' seul','tout seul',' juste','sans menu','sans frite','sans accompagnement'])){
@@ -1068,26 +1144,43 @@ function handleOrderFlow(rawMsg, msg){
   if(chatState.step === 'order_drink'){
     const it = chatState.order.pendingItem;
     let drinkName = null, drinkExtra = 0;
-    if(msg.includes('coca') || msg.includes('cola')) drinkName = 'Coca-Cola';
-    else if(msg.includes('eau') || msg.includes('water')) drinkName = 'Eau';
-    else if(msg.includes('mojito') || msg.includes('citron')) { drinkName = 'Citronnade Mojito'; drinkExtra = 2; }
-    else if(msg.includes('shake') || msg.includes('milk')) { drinkName = 'Milkshake'; drinkExtra = 1; }
+    if(/coca cherry|cherry/.test(msg)) drinkName = 'Coca-Cola Cherry';
+    else if(/coca zero|cola zero|\bzero\b/.test(msg)) drinkName = 'Coca-Cola Zéro';
+    else if(/coca|cola/.test(msg)) drinkName = 'Coca-Cola';
+    else if(/sprite/.test(msg)) drinkName = 'Sprite';
+    else if(/fanta orange/.test(msg)) drinkName = 'Fanta Orange';
+    else if(/fanta citron/.test(msg)) drinkName = 'Fanta Citron';
+    else if(/fanta/.test(msg)) drinkName = 'Fanta Orange';
+    else if(/tropico tropical|tropical/.test(msg)) drinkName = 'Tropico Tropical';
+    else if(/tropico/.test(msg)) drinkName = 'Tropico Original';
+    else if(/fuze.*peche|fuze.*pêche/.test(msg)) drinkName = 'Fuze Tea Pêche';
+    else if(/fuze.*citron|fuze.*menthe/.test(msg)) drinkName = 'Fuze Tea Citron-Menthe';
+    else if(/fuze ?tea|ice ?tea|the glace|thé glacé/.test(msg)) drinkName = 'Fuze Tea Pêche';
+    else if(/capri/.test(msg)) drinkName = 'Capri Sun';
+    else if(/pellegrino|petillante|pétillante/.test(msg)) drinkName = 'San Pellegrino';
+    else if(/evian|eau|water|minerale/.test(msg)) drinkName = 'Evian';
+    else if(/hibiscus/.test(msg)) { drinkName = 'Tea Hibiscus'; drinkExtra = 2; }
+    else if(/pasteque|pastèque/.test(msg)) { drinkName = 'Tea Pastèque'; drinkExtra = 2; }
+    else if(/peche mangue|pêche mangue|mangue/.test(msg)) { drinkName = 'Tea Pêche Mangue'; drinkExtra = 2; }
+    else if(/mojito fraise/.test(msg)) { drinkName = 'Mojito Fraise'; drinkExtra = 2; }
+    else if(/mojito|citronnade/.test(msg)) { drinkName = 'Citronnade Mojito'; drinkExtra = 2; }
+    else if(/curaco|curacao|curaçao|gingembre/.test(msg)) { drinkName = 'Citronnade Curaço'; drinkExtra = 2; }
     if(!drinkName){
       const altReply = handleAlternativeDrinks(msg);
-      if(altReply){
-        return botReply(altReply, true, 700, [
-          {label:'Coca 2,50€', value:'Coca'},
-          {label:'Eau 1,50€', value:'Eau'},
-          {label:'Mojito +2€', value:'Mojito'},
-          {label:'Milkshake +1€', value:'Milkshake'}
-        ]);
-      }
-      return botReply("Je n'ai pas reconnu cette boisson 🤔<br>On a : <b>Coca</b>, <b>Eau</b>, <b>Mojito</b> ou <b>Milkshake</b>.", true, 700, [
-        {label:'Coca 2,50€', value:'Coca'},
-        {label:'Eau 1,50€', value:'Eau'},
+      const drinkChoices = [
+        {label:'Coca 2,80€', value:'Coca'},
+        {label:'Sprite 2,80€', value:'Sprite'},
+        {label:'Fanta Orange 2,20€', value:'Fanta Orange'},
+        {label:'Tropico Tropical', value:'Tropico Tropical'},
+        {label:'Fuze Tea Pêche', value:'Fuze Tea Pêche'},
+        {label:'Evian 2,80€', value:'Evian'},
         {label:'Mojito +2€', value:'Mojito'},
-        {label:'Milkshake +1€', value:'Milkshake'}
-      ]);
+        {label:'Tea Hibiscus +2€', value:'Tea Hibiscus'}
+      ];
+      if(altReply){
+        return botReply(altReply, true, 700, drinkChoices);
+      }
+      return botReply("Je n'ai pas reconnu cette boisson 🤔<br>On a : Coca, Sprite, Fanta, Tropico, Fuze Tea, Evian, Mojito, Tea Hibiscus...", true, 700, drinkChoices);
     }
     const qty = chatState.order.qty || 1;
     let menuUnit = it.cat === 'signature' ? 13.90 : 10.50;
@@ -1144,10 +1237,14 @@ function handleOrderFlow(rawMsg, msg){
     // Sous-catégories
     if(msg.includes('boisson') && !findItem(rawMsg, ['drink'])){
       return botReply("🥤 Quelle boisson ?", true, 500, [
-        {label:'Coca 2,50€', value:'Coca'},
-        {label:'Eau 1,50€', value:'Eau'},
+        {label:'Coca 2,80€', value:'Coca'},
+        {label:'Sprite 2,80€', value:'Sprite'},
+        {label:'Fanta Orange 2,20€', value:'Fanta Orange'},
+        {label:'Tropico Tropical', value:'Tropico Tropical'},
+        {label:'Fuze Tea Pêche', value:'Fuze Tea Pêche'},
+        {label:'Evian 2,80€', value:'Evian'},
         {label:'Mojito 6,90€', value:'Mojito'},
-        {label:'Milkshake 5,90€', value:'Milkshake'}
+        {label:'Tea Hibiscus 6,90€', value:'Tea Hibiscus'}
       ]);
     }
     if(msg.includes('dessert') && !findItem(rawMsg, ['dessert'])){
