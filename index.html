@@ -1344,14 +1344,23 @@ function handleOrderFlow(rawMsg, msg){
       ]);
     }
     const SEARCH_CATS = ['side','dessert','drink','classique','signature','menu'];
-    const exact = findItem(rawMsg, SEARCH_CATS);
-    const variants = findItemVariants(rawMsg, SEARCH_CATS);
-    // Si exact a une kw ≥ 2 mots qui matche EXACTEMENT le msg → ajout direct
     const msgClean = normalize(rawMsg).trim();
-    const exactPerfect = exact && exact.kw.some(k => {
+    // BUG A FIX : si rawMsg = nom complet d'un item → ajout direct (court-circuit boucle clic)
+    const exactByName = ITEMS.find(it => normalize(it.name).trim() === msgClean);
+    const exact = exactByName || findItem(rawMsg, SEARCH_CATS);
+    let variants = findItemVariants(rawMsg, SEARCH_CATS);
+    // BUG B FIX : filtrer les variantes par "famille" (le 1er mot significatif du msg)
+    const FAMILIES = ['oasis','tropico','coca','tea','mojito','citronnade','curacao','tiramisu','fanta','sprite','schweppes','salade','tropical','hibiscus','pasteque','mangue','wrap','escalope','chicken','wings','tenders','nuggets','duo','menu','poulet','smash','burger'];
+    const fam = FAMILIES.find(f => msgClean.split(/\s+/).some(w => w === f || w.startsWith(f)));
+    if(fam){
+      const filtered = variants.filter(v => normalize(v.name).includes(fam));
+      if(filtered.length > 0) variants = filtered;
+    }
+    // Si exact (par nom complet OU kw ≥ 2 mots = msg) → ajout direct
+    const exactPerfect = exactByName || (exact && exact.kw.some(k => {
       const nk = normalize(k).trim();
       return nk === msgClean && nk.split(/\s+/).length >= 2;
-    });
+    }));
     if(variants.length > 1 && !exactPerfect){
       const choices = variants.slice(0, 8).map(v => ({
         label: v.name + ' ' + v.price.toFixed(2).replace('.',',') + '€',
