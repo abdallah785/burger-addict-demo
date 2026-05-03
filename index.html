@@ -861,6 +861,13 @@ function processMessage(rawMsg){
     ]);
   }
 
+  // === MULTI-ITEMS (plusieurs items + sauces + garnitures + ambiguïté) ===
+  const multi = parseMultiItems(rawMsg);
+  const hasContext = multi.sauces.length > 0 || multi.garnitures.length > 0 || !!multi.pendingAmbig;
+  if(multi.items.length >= 2 || (multi.items.length >= 1 && hasContext) || (multi.items.length === 0 && multi.pendingAmbig)){
+    return handleMultiOrder(multi);
+  }
+
   // === DÉTECTION DIRECTE D'UN PLAT ===
   const item = findItem(rawMsg);
   if(item){
@@ -941,6 +948,106 @@ function startOrder(){
     {label:'🐐 Goat', value:'Goat Burger'},
     {label:'💪 Bigsmash', value:'Bigsmash Burger'},
     {label:'📋 Voir le menu', value:'le menu'}
+  ]);
+}
+
+/* ============ MULTI-ITEMS PARSER (Burger Addict) ============
+   Détecte plusieurs items + sauces + garnitures + ambiguïté famille
+   dans une seule phrase. */
+const SAUCE_LIST = ['algerienne','blanche','samourai','ketchup','mayo','mayonnaise','barbecue','harissa','biggy','andalouse','smoked'];
+const GARNITURE_LIST = ['salade','tomate','oignon','oignons','cornichon','cornichons','crudites'];
+const FAMILY_KW_IGNORE = ['oasis','coca','cola','tea','mojito','citronnade','tropico','curacao','curaco'];
+
+function parseMultiItems(rawMsg){
+  let n = ' ' + normalize(rawMsg).trim() + ' ';
+  const items = [];
+  const sauces = [];
+  const garnitures = [];
+  let pendingAmbig = null;
+
+  for(const s of SAUCE_LIST){
+    const ns = normalize(s).trim();
+    if(!ns) continue;
+    if(new RegExp('\\b'+ns+'\\b').test(n)){
+      if(!sauces.includes(ns)) sauces.push(ns);
+      n = n.replace(new RegExp('\\b'+ns+'\\b','g'), ' ');
+    }
+  }
+  for(const g of GARNITURE_LIST){
+    const ng = normalize(g).trim();
+    if(!ng) continue;
+    if(new RegExp('\\b'+ng+'\\b').test(n)){
+      if(!garnitures.includes(ng)) garnitures.push(ng);
+      n = n.replace(new RegExp('\\b'+ng+'\\b','g'), ' ');
+    }
+  }
+  const allKws = [];
+  for(const it of ITEMS){
+    for(const k of it.kw){
+      const nk = normalize(k).trim();
+      if(nk.length >= 3 && !FAMILY_KW_IGNORE.includes(nk)) allKws.push({ item: it, kw: nk });
+    }
+  }
+  allKws.sort((a,b) => b.kw.length - a.kw.length);
+  for(const {item, kw} of allKws){
+    if(items.find(i => i.id === item.id)) continue;
+    const escKw = kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    if(new RegExp('\\b'+escKw+'\\b').test(n)){
+      items.push(item);
+      n = n.replace(new RegExp('\\b'+escKw+'\\b','g'), ' ');
+    }
+  }
+  const FAMILIES_AMBIG = [
+    {key:'oasis', label:'Oasis', emoji:'🍊', items: ITEMS.filter(i => /^Oasis /.test(i.name))},
+    {key:'tropico', label:'Tropico', emoji:'🥭', items: ITEMS.filter(i => /^Tropico /.test(i.name))},
+    {key:'coca', label:'Coca', emoji:'🥤', items: ITEMS.filter(i => /^Coca/.test(i.name))},
+    {key:'tea', label:'Tea', emoji:'🍵', items: ITEMS.filter(i => /^Tea /.test(i.name))},
+    {key:'mojito', label:'Mojito', emoji:'🌿', items: ITEMS.filter(i => /mojito/i.test(i.name))},
+    {key:'citronnade', label:'Citronnade', emoji:'🍋', items: ITEMS.filter(i => /^Citronnade /.test(i.name))}
+  ];
+  for(const fam of FAMILIES_AMBIG){
+    if(fam.items.length < 2) continue;
+    if(items.some(i => fam.items.includes(i))) continue;
+    if(new RegExp('\\b'+fam.key+'\\b').test(n)){
+      pendingAmbig = fam;
+      break;
+    }
+  }
+  return { items, sauces, garnitures, pendingAmbig };
+}
+
+function handleMultiOrder(multi){
+  const cartItems = [];
+  let summary = multi.items.length ? '✅ Commande reconnue :<br>' : '';
+  let total = 0;
+  const sandwichTarget = multi.items.find(it => ['signature','classique','side'].includes(it.cat));
+  multi.items.forEach((it) => {
+    let displayName = it.name;
+    if(it === sandwichTarget && (multi.sauces.length || multi.garnitures.length)){
+      displayName = it.name + ' (' + [...multi.sauces, ...multi.garnitures].join(', ') + ')';
+    }
+    cartItems.push({...it, name: displayName});
+    total += it.price;
+    summary += '• <b>' + displayName + '</b> — ' + it.price.toFixed(2) + '€<br>';
+  });
+  if(multi.pendingAmbig){
+    chatState.order = { items: cartItems, pendingItem: null, pendingAmbigVariants: multi.pendingAmbig.items, mode: null, name: null };
+    chatState.step = 'order_ambig';
+    if(cartItems.length){
+      summary += '<br><b>Total partiel : ' + total.toFixed(2) + '€</b><br><br>';
+    }
+    summary += multi.pendingAmbig.emoji + ' Pour le ' + multi.pendingAmbig.label + ', lequel ?';
+    return botReply(summary, true, 700, multi.pendingAmbig.items.map(v => ({
+      label: v.name + ' ' + v.price.toFixed(2).replace('.',',') + '€',
+      value: v.name
+    })));
+  }
+  chatState.order = { items: cartItems, pendingItem: null, mode: null, name: null };
+  chatState.step = 'order_mode';
+  summary += '<br><b>Total : ' + total.toFixed(2) + '€</b><br><br>📍 Sur place ou à emporter ?';
+  return botReply(summary, true, 700, [
+    {label:'🍽️ Sur place', value:'sur place'},
+    {label:'🥡 À emporter', value:'à emporter'}
   ]);
 }
 
@@ -1025,6 +1132,38 @@ function handleOrderFlow(rawMsg, msg){
   if(any(msg, ['annul ','stop ','retour','quitter']) && chatState.step !== 'order_confirm'){
     chatState.step = 'idle';
     return botReply("❌ Commande annulée. Que puis-je faire d'autre ?");
+  }
+
+  // === ÉTAPE : choix variante après ambiguïté multi-items ===
+  if(chatState.step === 'order_ambig'){
+    const variants = chatState.order.pendingAmbigVariants || [];
+    const msgClean = normalize(rawMsg).trim();
+    let variant = variants.find(v => normalize(v.name).trim() === msgClean);
+    if(!variant){
+      for(const v of variants){
+        for(const k of v.kw){
+          const nk = normalize(k).trim();
+          if(nk.length >= 3 && new RegExp('\\b'+nk+'\\b').test(' '+msgClean+' ')){ variant = v; break; }
+        }
+        if(variant) break;
+      }
+    }
+    if(variant){
+      chatState.order.items.push({...variant});
+      chatState.order.pendingAmbigVariants = null;
+      chatState.step = 'order_mode';
+      let total = chatState.order.items.reduce((s,i) => s + i.price, 0);
+      let summary = '✅ Ajouté : <b>'+variant.name+'</b> — '+variant.price.toFixed(2)+'€<br><br>';
+      summary += '<b>Total : '+total.toFixed(2)+'€</b><br><br>📍 Sur place ou à emporter ?';
+      return botReply(summary, true, 700, [
+        {label:'🍽️ Sur place', value:'sur place'},
+        {label:'🥡 À emporter', value:'à emporter'}
+      ]);
+    }
+    return botReply("Lequel veux-tu ?", true, 500, variants.map(v => ({
+      label: v.name + ' ' + v.price.toFixed(2).replace('.',',') + '€',
+      value: v.name
+    })));
   }
 
   // ÉTAPE Q+0 : ajouter frites au menu (depuis parsing complet)
